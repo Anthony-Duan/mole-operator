@@ -1,0 +1,7 @@
+apiVersion: operator.dtstack.com/v1
+kind: Mole
+metadata:
+  name: example-mole
+spec:
+  # Add fields here
+  size: 3
