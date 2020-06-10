@@ -12,14 +12,14 @@ mod-tidy:
 mod-vendor:
 	go mod vendor
 
-build-cmd:
-	go build cmd/manager/main.go
-
-run-cmd:
-	go run cmd/manager/main.go
-
 sdk-gen-k8s:
 	operator-sdk generate k8s
 
 sdk-gen-crds:
 	operator-sdk generate crds
+
+build-cmd:
+	go build cmd/manager/main.go
+
+operator-regist:
+	kubectl create -f deploy/crds/operator.dtstack.com_moles_crd.yaml
