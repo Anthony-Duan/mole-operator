@@ -1,6 +1,16 @@
 
 [operator-sdk](https://github.com/operator-framework/operator-sdk/blob/master/README.md)
+# What
+A mole is a small animal with black fur that lives underground.
+mole-operator is a operator which is responsible for turn em2.0 schema to kubernetes workload.
+mole-operator like a mole under kubernetes, which can be any service operator depended on schema given.
 
+
+# Setup && Build
+## MacOS
+brew install operator-sdk
+make mod-fresh
+make build-cmd
 
 # API操作
 ## Add api
