@@ -8,26 +8,27 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 type ConfigMap map[string]string
 
-type ServiceConfig struct {
-	ServiceDisplay string `json:"service_display,omitempty"`
-	Version        string `json:"version,omitempty"`
-	//Instance       struct {
-	//	ConfigPaths    []string           `json:"config_paths"`
-	//	Logs           []string           `json:"logs"`
-	//	DataDir        []string           `json:"data_dir"`
-	//	Environment    map[string]string  `json:"environment"`
-	//	Cmd            string             `json:"cmd,omitempty"`
-	//	PrometheusPort string             `json:"prometheus_port,omitempty"`
-	//	Replica        string             `json:"replica,omitempty"`
-	//} `json:"instance,omitempty"`
-	//Group     string    `json:"group,omitempty"`
-	//DependsOn []string  `json:"depends_on"`
-	//Config    ConfigMap `json:"config,omitempty"`
+type Instance struct {
+	ConfigPaths    []string          `json:"config_paths"`
+	Logs           []string          `json:"logs"`
+	DataDir        []string          `json:"data_dir"`
+	Environment    map[string]string `json:"environment"`
+	Cmd            string            `json:"cmd,omitempty"`
+	PrometheusPort string            `json:"prometheus_port,omitempty"`
+	Replica        string            `json:"replica,omitempty"`
+}
 
-	BaseProduct   string `json:"base_product,omitempty"`
-	BaseService   string `json:"base_service,omitempty"`
-	BaseParsed    bool   `json:"base_parsed,omitempty"`
-	BaseAtrribute string `json:"base_atrribute,omitempty"`
+type ServiceConfig struct {
+	ServiceDisplay string    `json:"service_display,omitempty"`
+	Version        string    `json:"version,omitempty"`
+	Instance       Instance  `json:"instance,omitempty"`
+	Group          string    `json:"group,omitempty"`
+	DependsOn      []string  `json:"depends_on"`
+	Config         ConfigMap `json:"config,omitempty"`
+	BaseProduct    string    `json:"base_product,omitempty"`
+	BaseService    string    `json:"base_service,omitempty"`
+	BaseParsed     bool      `json:"base_parsed,omitempty"`
+	BaseAtrribute  string    `json:"base_atrribute,omitempty"`
 }
 
 type SchemaConfig struct {

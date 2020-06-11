@@ -12,6 +12,16 @@ brew install operator-sdk
 make mod-fresh [可选，默认带vendor]
 make build-cmd
 
+## Windows
+### install operator-sdk
+git clone https://github.com/operator-framework/operator-sdk.git
+make tidy
+make install
+
+### build mole
+make mod-fresh [可选，默认带vendor]
+make build-cmd
+
 # Operator Sdk操作
 ## Add api
 operator-sdk add api --api-version=operator.dtstack.com/v1 --kind=Mole

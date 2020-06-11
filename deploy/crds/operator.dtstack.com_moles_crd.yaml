@@ -56,10 +56,55 @@ spec:
                           type: string
                         base_service:
                           type: string
+                        config:
+                          additionalProperties:
+                            type: string
+                          description: 'EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU
+                            TO OWN! NOTE: json tags are required.  Any new fields
+                            you add must have json tags for the fields to be serialized.'
+                          type: object
+                        depends_on:
+                          items:
+                            type: string
+                          type: array
+                        group:
+                          type: string
+                        instance:
+                          properties:
+                            cmd:
+                              type: string
+                            config_paths:
+                              items:
+                                type: string
+                              type: array
+                            data_dir:
+                              items:
+                                type: string
+                              type: array
+                            environment:
+                              additionalProperties:
+                                type: string
+                              type: object
+                            logs:
+                              items:
+                                type: string
+                              type: array
+                            prometheus_port:
+                              type: string
+                            replica:
+                              type: string
+                          required:
+                          - config_paths
+                          - data_dir
+                          - environment
+                          - logs
+                          type: object
                         service_display:
                           type: string
                         version:
                           type: string
+                      required:
+                      - depends_on
                       type: object
                     type: object
                 required:
