@@ -3,8 +3,11 @@ package mole
 import (
 	"context"
 
-	operatorv1 "dtstack.com/dtstack/mole-operator/pkg/apis/operator/v1"
+	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	v12 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
+	v1beta12 "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -46,22 +49,45 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	}
 
 	// Watch for changes to primary resource Mole
-	err = c.Watch(&source.Kind{Type: &operatorv1.Mole{}}, &handler.EnqueueRequestForObject{})
+	err = c.Watch(&source.Kind{Type: &molev1.Mole{}}, &handler.EnqueueRequestForObject{})
 	if err != nil {
 		return err
 	}
 
-	// TODO(user): Modify this to be the types you create that are owned by the primary resource
-	// Watch for changes to secondary resource Pods and requeue the owner Mole
-	err = c.Watch(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &operatorv1.Mole{},
-	})
+	// Watch for changes to secondary resource and requeue the owner Mole
+	err = c.Watch(&source.Kind{Type: &molev1.Mole{}}, &handler.EnqueueRequestForObject{})
 	if err != nil {
+		return err
+	}
+
+	if err = watchSecondaryResource(c, &v12.Deployment{}); err != nil {
+		return err
+	}
+
+	if err = watchSecondaryResource(c, &v1beta12.Ingress{}); err != nil {
+		return err
+	}
+
+	if err = watchSecondaryResource(c, &v1.ConfigMap{}); err != nil {
+		return err
+	}
+
+	if err = watchSecondaryResource(c, &v1.Service{}); err != nil {
+		return err
+	}
+
+	if err = watchSecondaryResource(c, &v1.ServiceAccount{}); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func watchSecondaryResource(c controller.Controller, resource runtime.Object) error {
+	return c.Watch(&source.Kind{Type: resource}, &handler.EnqueueRequestForOwner{
+		IsController: true,
+		OwnerType:    &molev1.Mole{},
+	})
 }
 
 // blank assignment to verify that ReconcileMole implements reconcile.Reconciler
@@ -85,9 +111,8 @@ type ReconcileMole struct {
 func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
 	reqLogger.Info("Reconciling Mole")
-
 	// Fetch the Mole instance
-	instance := &operatorv1.Mole{}
+	instance := &molev1.Mole{}
 	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -130,7 +155,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 }
 
 // newPodForCR returns a busybox pod with the same name/namespace as the cr
-func newPodForCR(cr *operatorv1.Mole) *corev1.Pod {
+func newPodForCR(cr *molev1.Mole) *corev1.Pod {
 	labels := map[string]string{
 		"app": cr.Name,
 	}

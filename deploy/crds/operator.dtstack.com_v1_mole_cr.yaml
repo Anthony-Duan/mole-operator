@@ -4,4 +4,11 @@ metadata:
   name: example-mole
 spec:
   # Add fields here
-  size: 3
+  product:
+    product_name: "wx_test"
+    service:
+      instance:
+        version: "0.0.1"
+        service_display: "test"
+        depends_on:
+          - "dtest"

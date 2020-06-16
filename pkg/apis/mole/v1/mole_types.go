@@ -1,6 +1,7 @@
 package v1
 
 import (
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -9,13 +10,18 @@ import (
 type ConfigMap map[string]string
 
 type Instance struct {
-	ConfigPaths    []string          `json:"config_paths"`
-	Logs           []string          `json:"logs"`
-	DataDir        []string          `json:"data_dir"`
-	Environment    map[string]string `json:"environment"`
-	Cmd            string            `json:"cmd,omitempty"`
-	PrometheusPort string            `json:"prometheus_port,omitempty"`
-	Replica        string            `json:"replica,omitempty"`
+	ConfigPaths    []string                 `json:"config_paths"`
+	Logs           []string                 `json:"logs"`
+	DataDir        []string                 `json:"data_dir"`
+	Environment    map[string]string        `json:"environment"`
+	Cmd            string                   `json:"cmd,omitempty"`
+	PrometheusPort string                   `json:"prometheus_port,omitempty"`
+	Containers     []v1.Container           `json:"containers,omitempty"`
+	Ingress        *MoleIngress             `json:"ingress,omitempty"`
+	Service        *MoleService             `json:"service,omitempty"`
+	Deployment     *MoleDeployment          `json:"deployment,omitempty"`
+	Resources      *v1.ResourceRequirements `json:"resources,omitempty"`
+	ConfigMaps     *v1.ConfigMap            `json:"configMaps,omitempty"`
 }
 
 type ServiceConfig struct {
@@ -28,7 +34,7 @@ type ServiceConfig struct {
 	BaseProduct    string    `json:"base_product,omitempty"`
 	BaseService    string    `json:"base_service,omitempty"`
 	BaseParsed     bool      `json:"base_parsed,omitempty"`
-	BaseAtrribute  string    `json:"base_atrribute,omitempty"`
+	BaseAttribute  string    `json:"base_attribute,omitempty"`
 }
 
 type SchemaConfig struct {
@@ -36,7 +42,40 @@ type SchemaConfig struct {
 	ProductName        string                   `json:"product_name,omitempty"`
 	ProductNameDisplay string                   `json:"product_name_display,omitempty"`
 	ProductVersion     string                   `json:"product_version,omitempty"`
+	ProductUUid        string                   `json:"product_uuid"`
 	Service            map[string]ServiceConfig `json:"service"`
+}
+
+// MoleIngress provides a means to configure the ingress created
+type MoleIngress struct {
+	Annotations   map[string]string `json:"annotations,omitempty"`
+	Hostname      string            `json:"hostname,omitempty"`
+	Labels        map[string]string `json:"labels,omitempty"`
+	Path          string            `json:"path,omitempty"`
+	Enabled       bool              `json:"enabled,omitempty"`
+	TLSEnabled    bool              `json:"tlsEnabled,omitempty"`
+	TLSSecretName string            `json:"tlsSecretName,omitempty"`
+	TargetPort    string            `json:"targetPort,omitempty"`
+}
+
+// MoleService provides a means to configure the service
+type MoleService struct {
+	Annotations map[string]string `json:"annotations,omitempty"`
+	Labels      map[string]string `json:"labels,omitempty"`
+	Type        v1.ServiceType    `json:"type,omitempty"`
+	Ports       []v1.ServicePort  `json:"ports,omitempty"`
+}
+
+// MoleDeployment provides a means to configure the deployment
+type MoleDeployment struct {
+	Annotations                   map[string]string      `json:"annotations,omitempty"`
+	Labels                        map[string]string      `json:"labels,omitempty"`
+	Replicas                      int32                  `json:"replicas"`
+	NodeSelector                  map[string]string      `json:"nodeSelector,omitempty"`
+	Tolerations                   []v1.Toleration        `json:"tolerations,omitempty"`
+	Affinity                      *v1.Affinity           `json:"affinity,omitempty"`
+	SecurityContext               *v1.PodSecurityContext `json:"securityContext,omitempty"`
+	TerminationGracePeriodSeconds int64                  `json:"terminationGracePeriodSeconds"`
 }
 
 // MoleSpec defines the desired state of Mole
