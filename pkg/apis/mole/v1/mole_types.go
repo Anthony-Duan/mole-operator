@@ -7,6 +7,14 @@ import (
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+type StatusPhase string
+
+var (
+	NoPhase          StatusPhase
+	PhaseReconciling StatusPhase = "reconciling"
+	PhaseFailing     StatusPhase = "failing"
+)
+
 type ConfigMap map[string]string
 
 type Instance struct {
@@ -16,12 +24,11 @@ type Instance struct {
 	Environment    map[string]string        `json:"environment"`
 	Cmd            string                   `json:"cmd,omitempty"`
 	PrometheusPort string                   `json:"prometheus_port,omitempty"`
-	Containers     []v1.Container           `json:"containers,omitempty"`
+	Image          string                   `json:"image,omitempty"`
 	Ingress        *MoleIngress             `json:"ingress,omitempty"`
 	Service        *MoleService             `json:"service,omitempty"`
 	Deployment     *MoleDeployment          `json:"deployment,omitempty"`
 	Resources      *v1.ResourceRequirements `json:"resources,omitempty"`
-	ConfigMaps     *v1.ConfigMap            `json:"configMaps,omitempty"`
 }
 
 type ServiceConfig struct {
@@ -91,6 +98,8 @@ type MoleStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
+	Phase   StatusPhase `json:"phase"`
+	Message string      `json:"message"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
