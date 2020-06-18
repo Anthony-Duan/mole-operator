@@ -2,7 +2,6 @@ package model
 
 import (
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
-	"dtstack.com/dtstack/mole-operator/pkg/controller/config"
 	"fmt"
 	v1 "k8s.io/api/apps/v1"
 	v13 "k8s.io/api/core/v1"
@@ -104,7 +103,7 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 	var volumes []v13.Volume
 	// Volume to mount the config file from a configMap
 	volumes = append(volumes, v13.Volume{
-		Name: BuildConfigMapName(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, cr.Spec.Product.ProductVersion, name, MoleConfigName),
+		Name: BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 		VolumeSource: v13.VolumeSource{
 			ConfigMap: &v13.ConfigMapVolumeSource{
 				LocalObjectReference: v13.LocalObjectReference{
@@ -116,48 +115,13 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 	return volumes
 }
 
-func getVolumeMounts(cr *molev1.Mole) []v13.VolumeMount {
+func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	var mounts []v13.VolumeMount
 
 	mounts = append(mounts, v13.VolumeMount{
-		Name:      GrafanaConfigName,
-		MountPath: "/etc/grafana/",
+		Name:      BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+		MountPath: cr.Spec.Product.Service[name].Instance.ConfigPath,
 	})
-
-	mounts = append(mounts, v13.VolumeMount{
-		Name:      GrafanaDataVolumeName,
-		MountPath: "/var/lib/grafana",
-	})
-	mounts = append(mounts, v13.VolumeMount{
-		Name:      GrafanaPluginsVolumeName,
-		MountPath: "/var/lib/grafana/plugins",
-	})
-
-	mounts = append(mounts, v13.VolumeMount{
-		Name:      GrafanaLogsVolumeName,
-		MountPath: "/var/log/grafana",
-	})
-
-	mounts = append(mounts, v13.VolumeMount{
-		Name:      GrafanaDatasourcesConfigMapName,
-		MountPath: "/etc/grafana/provisioning/datasources",
-	})
-
-	for _, secret := range cr.Spec.Secrets {
-		mountName := fmt.Sprintf("secret-%s", secret)
-		mounts = append(mounts, v13.VolumeMount{
-			Name:      mountName,
-			MountPath: config.SecretsMountDir + secret,
-		})
-	}
-
-	for _, configmap := range cr.Spec.ConfigMaps {
-		mountName := fmt.Sprintf("configmap-%s", configmap)
-		mounts = append(mounts, v13.VolumeMount{
-			Name:      mountName,
-			MountPath: config.ConfigMapsMountDir + configmap,
-		})
-	}
 
 	return mounts
 }
@@ -176,7 +140,7 @@ func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *v13.
 	}
 }
 
-func getContainers(cr *molev1.Mole, configHash, dsHash, name string) []v13.Container {
+func getContainers(cr *molev1.Mole, name string) []v13.Container {
 	var containers []v13.Container
 	containers = append(containers, v13.Container{
 		Name:       name,
@@ -189,17 +153,7 @@ func getContainers(cr *molev1.Mole, configHash, dsHash, name string) []v13.Conta
 				Protocol:      "TCP",
 			},
 		},
-		Env: []v13.EnvVar{
-			{
-				Name:  LastConfigEnvVar,
-				Value: configHash,
-			},
-			{
-				Name:  LastDatasourcesConfigEnvVar,
-				Value: dsHash,
-			},
-		},
-		VolumeMounts:             getVolumeMounts(cr),
+		VolumeMounts:             getVolumeMounts(cr, name),
 		LivenessProbe:            getProbe(cr, 60, 30, 10, name),
 		ReadinessProbe:           getProbe(cr, 5, 3, 1, name),
 		TerminationMessagePath:   "/dev/termination-log",
@@ -210,7 +164,7 @@ func getContainers(cr *molev1.Mole, configHash, dsHash, name string) []v13.Conta
 	return containers
 }
 
-func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, configHash, dsHash, name string) v1.DeploymentSpec {
+func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name string) v1.DeploymentSpec {
 	return v1.DeploymentSpec{
 		Replicas: getReplicas(cr, name),
 		Selector: &v12.LabelSelector{
@@ -230,7 +184,7 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, configHas
 				Affinity:                      getAffinities(cr, name),
 				SecurityContext:               getSecurityContext(cr, name),
 				Volumes:                       getVolumes(cr, name),
-				Containers:                    getContainers(cr, configHash, dsHash, name),
+				Containers:                    getContainers(cr, name),
 				ServiceAccountName:            MoleServiceAccountName,
 				TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
 			},
@@ -242,14 +196,20 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, configHas
 	}
 }
 
-func MoleDeployment(cr *molev1.Mole, configHash, dsHash, name string) *v1.Deployment {
+func MoleDeployment(cr *molev1.Mole, name string) *v1.Deployment {
 	return &v1.Deployment{
 		ObjectMeta: v12.ObjectMeta{
 			Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			Namespace: cr.Namespace,
 		},
-		Spec: getDeploymentSpec(cr, nil, configHash, dsHash, name),
+		Spec: getDeploymentSpec(cr, nil, name),
 	}
+}
+
+func MoleDeploymentReconciled(cr *molev1.Mole, currentState *v1.Deployment, name string) *v1.Deployment {
+	reconciled := currentState.DeepCopy()
+	reconciled.Spec = getDeploymentSpec(cr, currentState.Spec.Template.Annotations, name)
+	return reconciled
 }
 
 func MoleDeploymentSelector(cr *molev1.Mole) client.ObjectKey {

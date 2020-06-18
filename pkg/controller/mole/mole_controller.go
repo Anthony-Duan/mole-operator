@@ -3,8 +3,8 @@ package mole
 import (
 	"context"
 	"dtstack.com/dtstack/mole-operator/pkg/controller/common"
-	"dtstack.com/dtstack/mole-operator/pkg/controller/config"
 	"k8s.io/client-go/tools/record"
+	"time"
 
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
 	v12 "k8s.io/api/apps/v1"
@@ -93,7 +93,6 @@ type ReconcileMole struct {
 	// that reads objects from the cache and writes to the apiserver
 	client   client.Client
 	scheme   *runtime.Scheme
-	config   *config.ControllerConfig
 	context  context.Context
 	cancel   context.CancelFunc
 	recorder record.EventRecorder
@@ -131,8 +130,15 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 		}
 
 		//TODO get desired status
+		reconciler := NewMoleReconciler(serviceName)
+		desiredState := reconciler.Reconcile(currentState, cr)
 
 		//TODO action run all
+		actionRunner := common.NewServiceActionRunner(r.context, r.client, r.scheme, cr)
+		err = actionRunner.RunAll(desiredState)
+		if err != nil {
+			return r.manageError(cr, err)
+		}
 	}
 
 	return reconcile.Result{}, nil
@@ -152,9 +158,5 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 		return reconcile.Result{}, err
 	}
 
-	common.ControllerEvents <- common.ControllerState{
-		GrafanaReady: false,
-	}
-
-	return reconcile.Result{RequeueAfter: config.RequeueDelay}, nil
+	return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 }

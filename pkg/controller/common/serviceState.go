@@ -69,7 +69,7 @@ func (i *ServiceState) readMoleIngress(ctx context.Context, cr *molev1.Mole, cli
 }
 
 func (i *ServiceState) readMoleDeployment(ctx context.Context, cr *molev1.Mole, client client.Client, name string) error {
-	currentState := model.MoleDeployment(cr, "", "", name)
+	currentState := model.MoleDeployment(cr, name)
 	selector := model.MoleDeploymentSelector(cr)
 	err := client.Get(ctx, selector, currentState)
 	if err != nil {

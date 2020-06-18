@@ -111,6 +111,15 @@ func MoleService(cr *molev1.Mole, name string) *v1.Service {
 	}
 }
 
+func MoleServiceReconciled(cr *molev1.Mole, currentState *v1.Service, name string) *v1.Service {
+	reconciled := currentState.DeepCopy()
+	reconciled.Labels = getServiceLabels(cr, name)
+	reconciled.Annotations = getServiceAnnotations(cr, currentState.Annotations, name)
+	reconciled.Spec.Ports = getServicePorts(cr, currentState, name)
+	reconciled.Spec.Type = getServiceType(cr, name)
+	return reconciled
+}
+
 func MoleServiceSelector(cr *molev1.Mole, name string) client.ObjectKey {
 	return client.ObjectKey{
 		Namespace: cr.Namespace,

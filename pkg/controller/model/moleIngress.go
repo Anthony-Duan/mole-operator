@@ -61,6 +61,14 @@ func MoleIngress(cr *molev1.Mole, name string) *v1beta1.Ingress {
 	}
 }
 
+func MoleIngressReconciled(cr *molev1.Mole, currentState *v1beta1.Ingress, name string) *v1beta1.Ingress {
+	reconciled := currentState.DeepCopy()
+	reconciled.Labels = GetIngressLabels(cr, name)
+	reconciled.Annotations = GetIngressAnnotations(cr, currentState.Annotations, name)
+	reconciled.Spec = getIngressSpec(cr, name)
+	return reconciled
+}
+
 func MoleIngressSelector(cr *molev1.Mole, name string) client.ObjectKey {
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
