@@ -2,7 +2,6 @@ package model
 
 import (
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
-	"github.com/integr8ly/grafana-operator/v3/pkg/apis/integreatly/v1alpha1"
 	"k8s.io/api/extensions/v1beta1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"

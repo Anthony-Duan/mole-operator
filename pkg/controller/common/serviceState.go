@@ -30,7 +30,6 @@ func (i *ServiceState) Read(ctx context.Context, cr *molev1.Mole, client client.
 	if err != nil {
 		return err
 	}
-
 	err = i.readMoleService(ctx, cr, client, i.Name)
 	if err != nil {
 		return err

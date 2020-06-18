@@ -25,6 +25,7 @@ type Instance struct {
 	Cmd            string                   `json:"cmd,omitempty"`
 	PrometheusPort string                   `json:"prometheus_port,omitempty"`
 	Image          string                   `json:"image,omitempty"`
+	ContainerPort  int                      `json:"container_port,omitempty"`
 	Ingress        *MoleIngress             `json:"ingress,omitempty"`
 	Service        *MoleService             `json:"service,omitempty"`
 	Deployment     *MoleDeployment          `json:"deployment,omitempty"`

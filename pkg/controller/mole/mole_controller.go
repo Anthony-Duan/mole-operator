@@ -119,7 +119,6 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 	}
 
 	cr := instance.DeepCopy()
-
 	for serviceName := range cr.Spec.Product.Service {
 		// read current state
 		currentState := common.NewServiceState(serviceName)
@@ -140,7 +139,6 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 			return r.manageError(cr, err)
 		}
 	}
-
 	return reconcile.Result{}, nil
 }
 

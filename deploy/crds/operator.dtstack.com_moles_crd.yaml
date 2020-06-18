@@ -72,10 +72,10 @@ spec:
                           properties:
                             cmd:
                               type: string
-                            config_paths:
-                              items:
-                                type: string
-                              type: array
+                            config_path:
+                              type: string
+                            container_port:
+                              type: integer
                             data_dir:
                               items:
                                 type: string
@@ -1222,7 +1222,7 @@ spec:
                                   type: string
                               type: object
                           required:
-                          - config_paths
+                          - config_path
                           - data_dir
                           - environment
                           - logs

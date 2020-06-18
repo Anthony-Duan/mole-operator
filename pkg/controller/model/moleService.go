@@ -2,12 +2,10 @@ package model
 
 import (
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
-	"fmt"
 	v1 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strconv"
 )
 
 func getServiceLabels(cr *molev1.Mole, name string) map[string]string {
@@ -36,57 +34,23 @@ func getServiceType(cr *molev1.Mole, name string) v1.ServiceType {
 }
 
 func GetMolePort(cr *molev1.Mole, name string) int {
-
-	if cr.Spec.Product.Service[name].Instance.ConfigMaps.Data[""] == "" {
-		return MoleHttpPort
-	}
-
-	port, err := strconv.Atoi(cr.Spec.Product.Service[name].Instance.ConfigMaps.Data[""])
-	if err != nil {
-		return MoleHttpPort
-	}
-
-	return port
+	return cr.Spec.Product.Service[name].Instance.ContainerPort
 }
 
 func getServicePorts(cr *molev1.Mole, currentState *v1.Service, name string) []v1.ServicePort {
-	intPort := int32(GetMolePort(cr, name))
-	portName := fmt.Sprintf("%v-%v-%v", cr.Spec.Product.ProductName, name, MoleHttpPortName)
+	ContainerPort := int32(GetMolePort(cr, name))
+	portName := BuildPortName(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, cr.Spec.Product.ProductVersion, name, MoleHttpPortName)
 	defaultPorts := []v1.ServicePort{
 		{
 			Name:       portName,
 			Protocol:   "TCP",
-			Port:       intPort,
+			Port:       ContainerPort,
 			TargetPort: intstr.FromString(portName),
 		},
 	}
 
 	if cr.Spec.Product.Service[name].Instance.Service == nil {
 		return defaultPorts
-	}
-
-	// Re-assign existing node port
-	if cr.Spec.Product.Service[name].Instance.Service != nil &&
-		currentState != nil &&
-		cr.Spec.Product.Service[name].Instance.Service.Type == v1.ServiceTypeNodePort {
-		for _, port := range currentState.Spec.Ports {
-			if port.Name == GrafanaHttpPortName {
-				defaultPorts[0].NodePort = port.NodePort
-			}
-		}
-	}
-
-	if cr.Spec.Product.Service[name].Instance.Service.Ports == nil {
-		return defaultPorts
-	}
-
-	// Don't allow overriding the default port but allow adding
-	// additional ports
-	for _, port := range cr.Spec.Product.Service[name].Instance.Service.Ports {
-		if port.Name == GrafanaHttpPortName || port.Port == intPort {
-			continue
-		}
-		defaultPorts = append(defaultPorts, port)
 	}
 
 	return defaultPorts
