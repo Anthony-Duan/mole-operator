@@ -181,19 +181,15 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 func TopologySort(depends map[string][]string) ([]string, error) {
 	queue := list.New()
 	result := make([]string, 0)
-	names := make([]string, 0)
 	count := make(map[string]int)
 
 	for name, dependList := range depends { // init topo
 		count[name] = len(dependList)
-		names = append(names, name)
-	}
-
-	for _, name := range names { // add no depends service in queue
-		if len(depends[name]) == 0 {
+		if count[name] == 0 { // add no depends service in queue
 			queue.PushBack(name)
 		}
 	}
+
 	for queue.Len() > 0 {
 		top := queue.Front()
 		queue.Remove(top)
@@ -206,7 +202,7 @@ func TopologySort(depends map[string][]string) ([]string, error) {
 			}
 		}
 	}
-	if len(result) < len(names) {
+	if len(result) < len(depends) {
 		return nil, fmt.Errorf("can't deploy product on this depends")
 	}
 	return result, nil
