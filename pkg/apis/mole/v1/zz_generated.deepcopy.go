@@ -331,13 +331,6 @@ func (in *ServiceConfig) DeepCopyInto(out *ServiceConfig) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
-	if in.Config != nil {
-		in, out := &in.Config, &out.Config
-		*out = make(ConfigMap, len(*in))
-		for key, val := range *in {
-			(*out)[key] = val
-		}
-	}
 	return
 }
 

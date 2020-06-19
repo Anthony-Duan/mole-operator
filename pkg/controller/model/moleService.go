@@ -19,7 +19,6 @@ func getServiceAnnotations(cr *molev1.Mole, existing map[string]string, name str
 	if cr.Spec.Product.Service[name].Instance.Service.Annotations == nil {
 		return existing
 	}
-
 	return MergeAnnotations(cr.Spec.Product.Service[name].Instance.Service.Annotations, existing)
 }
 
@@ -39,7 +38,7 @@ func GetMolePort(cr *molev1.Mole, name string) int {
 
 func getServicePorts(cr *molev1.Mole, currentState *v1.Service, name string) []v1.ServicePort {
 	ContainerPort := int32(GetMolePort(cr, name))
-	portName := BuildPortName(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, cr.Spec.Product.ProductVersion, name, MoleHttpPortName)
+	portName := BuildPortName(name, MoleHttpPortName)
 	defaultPorts := []v1.ServicePort{
 		{
 			Name:       portName,
@@ -48,11 +47,9 @@ func getServicePorts(cr *molev1.Mole, currentState *v1.Service, name string) []v
 			TargetPort: intstr.FromString(portName),
 		},
 	}
-
 	if cr.Spec.Product.Service[name].Instance.Service == nil {
 		return defaultPorts
 	}
-
 	return defaultPorts
 }
 
@@ -87,6 +84,6 @@ func MoleServiceReconciled(cr *molev1.Mole, currentState *v1.Service, name strin
 func MoleServiceSelector(cr *molev1.Mole, name string) client.ObjectKey {
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
-		Name:      BuildResourceLabel(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+		Name:      BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 	}
 }

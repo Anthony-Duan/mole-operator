@@ -58,10 +58,6 @@ spec:
                           type: string
                         base_service:
                           type: string
-                        config:
-                          additionalProperties:
-                            type: string
-                          type: object
                         depends_on:
                           items:
                             type: string
@@ -1221,22 +1217,14 @@ spec:
                                     methods for a service
                                   type: string
                               type: object
-                          required:
-                          - config_path
-                          - data_dir
-                          - environment
-                          - logs
                           type: object
                         service_display:
                           type: string
                         version:
                           type: string
-                      required:
-                      - depends_on
                       type: object
                     type: object
                 required:
-                - product_uuid
                 - service
                 type: object
             type: object

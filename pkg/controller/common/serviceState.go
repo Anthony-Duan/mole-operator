@@ -4,6 +4,7 @@ import (
 	"context"
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
 	"dtstack.com/dtstack/mole-operator/pkg/controller/model"
+	v12 "k8s.io/api/apps/v1"
 	v13 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
@@ -26,6 +27,7 @@ func NewServiceState(name string) *ServiceState {
 }
 
 func (i *ServiceState) Read(ctx context.Context, cr *molev1.Mole, client client.Client) error {
+
 	err := i.readMoleDeployment(ctx, cr, client, i.Name)
 	if err != nil {
 		return err
@@ -34,13 +36,13 @@ func (i *ServiceState) Read(ctx context.Context, cr *molev1.Mole, client client.
 	if err != nil {
 		return err
 	}
-
 	err = i.readMoleIngress(ctx, cr, client)
 	return err
 }
 
 func (i *ServiceState) readMoleService(ctx context.Context, cr *molev1.Mole, client client.Client, name string) error {
-	currentState := model.MoleService(cr, name)
+	//currentState := model.MoleService(cr, name)
+	currentState := &v1.Service{}
 	selector := model.MoleServiceSelector(cr, name)
 	err := client.Get(ctx, selector, currentState)
 	if err != nil {
@@ -50,11 +52,13 @@ func (i *ServiceState) readMoleService(ctx context.Context, cr *molev1.Mole, cli
 		return err
 	}
 	i.MoleService = currentState.DeepCopy()
+
 	return nil
 }
 
 func (i *ServiceState) readMoleIngress(ctx context.Context, cr *molev1.Mole, client client.Client) error {
-	currentState := model.MoleIngress(cr, i.Name)
+	//currentState := model.MoleIngress(cr, i.Name)
+	currentState := &v1beta1.Ingress{}
 	selector := model.MoleIngressSelector(cr, i.Name)
 	err := client.Get(ctx, selector, currentState)
 	if err != nil {
@@ -68,8 +72,9 @@ func (i *ServiceState) readMoleIngress(ctx context.Context, cr *molev1.Mole, cli
 }
 
 func (i *ServiceState) readMoleDeployment(ctx context.Context, cr *molev1.Mole, client client.Client, name string) error {
-	currentState := model.MoleDeployment(cr, name)
-	selector := model.MoleDeploymentSelector(cr)
+	//currentState := model.MoleDeployment(cr, name)
+	currentState := &v12.Deployment{}
+	selector := model.MoleDeploymentSelector(cr, name)
 	err := client.Get(ctx, selector, currentState)
 	if err != nil {
 		if errors.IsNotFound(err) {

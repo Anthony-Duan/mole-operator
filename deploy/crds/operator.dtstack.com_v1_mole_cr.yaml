@@ -5,10 +5,15 @@ metadata:
 spec:
   # Add fields here
   product:
-    product_name: "wx_test"
+    product_name: wxtest
+    product_version: v1.0.0
+    parent_product_name: dtest
     service:
-      instance:
-        version: "0.0.1"
-        service_display: "test"
-        depends_on:
-          - "dtest"
+      "nginx":
+        instance:
+          image: nginx:latest
+          container_port: 8080
+          config_path : /config
+          service:
+            annotations:
+              "name": test

@@ -66,9 +66,11 @@ func NewServiceActionRunner(ctx context.Context, client client.Client, scheme *r
 
 func (i *ServiceActionRunner) RunAll(desiredState DesiredServiceState) error {
 	for index, action := range desiredState {
+
 		msg, err := action.Run(i)
 		if err != nil {
 			i.log.Info(fmt.Sprintf("(%5d) %10s %s", index, "FAILED", msg))
+			i.log.Info(fmt.Sprintf("err:%v", err))
 			return err
 		}
 		i.log.Info(fmt.Sprintf("(%5d) %10s %s", index, "SUCCESS", msg))
@@ -82,7 +84,6 @@ func (i *ServiceActionRunner) create(obj runtime.Object) error {
 	if err != nil {
 		return err
 	}
-
 	return i.client.Create(i.ctx, obj)
 }
 

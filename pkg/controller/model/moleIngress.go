@@ -36,7 +36,7 @@ func getIngressSpec(cr *molev1.Mole, name string) v1beta1.IngressSpec {
 							{
 								Path: GetPath(cr, name),
 								Backend: v1beta1.IngressBackend{
-									ServiceName: BuildResourceName(MoleIngressName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+									ServiceName: BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 									ServicePort: GetIngressTargetPort(cr, name),
 								},
 							},
@@ -71,7 +71,7 @@ func MoleIngressReconciled(cr *molev1.Mole, currentState *v1beta1.Ingress, name 
 func MoleIngressSelector(cr *molev1.Mole, name string) client.ObjectKey {
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
-		Name:      BuildResourceLabel(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+		Name:      BuildResourceName(MoleIngressName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 	}
 }
 

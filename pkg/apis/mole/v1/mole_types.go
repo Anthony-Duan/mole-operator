@@ -18,11 +18,11 @@ var (
 type ConfigMap map[string]string
 
 type Instance struct {
-	ConfigPath     string                   `json:"config_path"`
-	Logs           []string                 `json:"logs"`
-	DataDir        []string                 `json:"data_dir"`
-	Environment    map[string]string        `json:"environment"`
-	Cmd            string                   `json:"cmd,omitempty"`
+	ConfigPath     string                   `json:"config_path,omitempty"`
+	Logs           []string                 `json:"logs,omitempty"`
+	DataDir        []string                 `json:"data_dir,omitempty"`
+	Environment    map[string]string        `json:"environment,omitempty"`
+	Cmd            string                   `json:"cmd,omitempty,omitempty"`
 	PrometheusPort string                   `json:"prometheus_port,omitempty"`
 	Image          string                   `json:"image,omitempty"`
 	ContainerPort  int                      `json:"container_port,omitempty"`
@@ -33,16 +33,15 @@ type Instance struct {
 }
 
 type ServiceConfig struct {
-	ServiceDisplay string    `json:"service_display,omitempty"`
-	Version        string    `json:"version,omitempty"`
-	Instance       Instance  `json:"instance,omitempty"`
-	Group          string    `json:"group,omitempty"`
-	DependsOn      []string  `json:"depends_on"`
-	Config         ConfigMap `json:"config,omitempty"`
-	BaseProduct    string    `json:"base_product,omitempty"`
-	BaseService    string    `json:"base_service,omitempty"`
-	BaseParsed     bool      `json:"base_parsed,omitempty"`
-	BaseAttribute  string    `json:"base_attribute,omitempty"`
+	ServiceDisplay string   `json:"service_display,omitempty"`
+	Version        string   `json:"version,omitempty"`
+	Instance       Instance `json:"instance,omitempty"`
+	Group          string   `json:"group,omitempty"`
+	DependsOn      []string `json:"depends_on,omitempty"`
+	BaseProduct    string   `json:"base_product,omitempty"`
+	BaseService    string   `json:"base_service,omitempty"`
+	BaseParsed     bool     `json:"base_parsed,omitempty"`
+	BaseAttribute  string   `json:"base_attribute,omitempty"`
 }
 
 type SchemaConfig struct {
@@ -50,7 +49,7 @@ type SchemaConfig struct {
 	ProductName        string                   `json:"product_name,omitempty"`
 	ProductNameDisplay string                   `json:"product_name_display,omitempty"`
 	ProductVersion     string                   `json:"product_version,omitempty"`
-	ProductUUid        string                   `json:"product_uuid"`
+	ProductUUid        string                   `json:"product_uuid,omitempty"`
 	Service            map[string]ServiceConfig `json:"service"`
 }
 

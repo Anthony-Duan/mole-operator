@@ -153,12 +153,12 @@ func getContainers(cr *molev1.Mole, name string) []v13.Container {
 				Protocol:      "TCP",
 			},
 		},
-		VolumeMounts:             getVolumeMounts(cr, name),
-		LivenessProbe:            getProbe(cr, 60, 30, 10, name),
-		ReadinessProbe:           getProbe(cr, 5, 3, 1, name),
-		TerminationMessagePath:   "/dev/termination-log",
-		TerminationMessagePolicy: "File",
-		ImagePullPolicy:          "IfNotPresent",
+		VolumeMounts: getVolumeMounts(cr, name),
+		//LivenessProbe:            getProbe(cr, 60, 30, 10, name),
+		//ReadinessProbe:           getProbe(cr, 5, 3, 1, name),
+		//TerminationMessagePath:   "/dev/termination-log",
+		//TerminationMessagePolicy: "File",
+		ImagePullPolicy: "IfNotPresent",
 	})
 
 	return containers
@@ -179,14 +179,14 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 				Annotations: getPodAnnotations(cr, annotations, name),
 			},
 			Spec: v13.PodSpec{
-				NodeSelector:                  getNodeSelectors(cr, name),
-				Tolerations:                   getTolerations(cr, name),
-				Affinity:                      getAffinities(cr, name),
-				SecurityContext:               getSecurityContext(cr, name),
-				Volumes:                       getVolumes(cr, name),
-				Containers:                    getContainers(cr, name),
-				ServiceAccountName:            MoleServiceAccountName,
-				TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
+				NodeSelector:    getNodeSelectors(cr, name),
+				Tolerations:     getTolerations(cr, name),
+				Affinity:        getAffinities(cr, name),
+				SecurityContext: getSecurityContext(cr, name),
+				Volumes:         getVolumes(cr, name),
+				Containers:      getContainers(cr, name),
+				//ServiceAccountName: MoleServiceAccountName,
+				//TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
 			},
 		},
 		Strategy: v1.DeploymentStrategy{
@@ -212,9 +212,9 @@ func MoleDeploymentReconciled(cr *molev1.Mole, currentState *v1.Deployment, name
 	return reconciled
 }
 
-func MoleDeploymentSelector(cr *molev1.Mole) client.ObjectKey {
+func MoleDeploymentSelector(cr *molev1.Mole, name string) client.ObjectKey {
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
-		Name:      MoleDeploymentName,
+		Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 	}
 }

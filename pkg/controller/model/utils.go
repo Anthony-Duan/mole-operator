@@ -1,15 +1,17 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func MergeAnnotations(requested map[string]string, existing map[string]string) map[string]string {
-	if existing == nil {
-		return requested
-	}
-
-	for k, v := range requested {
-		existing[k] = v
-	}
+	//if existing == nil {
+	//	return requested
+	//}
+	//
+	//for k, v := range requested {
+	//	existing[k] = v
+	//}
 	return existing
 }
 
@@ -24,6 +26,6 @@ func BuildResourceLabel(parentProductName, productName, serviceName string) stri
 func BuildConfigMapName(parentProductName, productName, productVersion, serviceName, configName string) string {
 	return fmt.Sprintf("%v-%v-%v-%v-%v", parentProductName, productName, productVersion, serviceName, configName)
 }
-func BuildPortName(parentProductName, productName, productVersion, serviceName, portName string) string {
-	return fmt.Sprintf("%v-%v-%v-%v-%v", parentProductName, productName, productVersion, serviceName, portName)
+func BuildPortName(serviceName, portName string) string {
+	return fmt.Sprintf("%v-%v", serviceName, portName)
 }

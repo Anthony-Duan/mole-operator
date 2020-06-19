@@ -3,7 +3,6 @@ package mole
 import (
 	"context"
 	"dtstack.com/dtstack/mole-operator/pkg/controller/common"
-	"k8s.io/client-go/tools/record"
 	"time"
 
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
@@ -36,7 +35,14 @@ func Add(mgr manager.Manager) error {
 
 // newReconciler returns a new reconcile.Reconciler
 func newReconciler(mgr manager.Manager) reconcile.Reconciler {
-	return &ReconcileMole{client: mgr.GetClient(), scheme: mgr.GetScheme()}
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	return &ReconcileMole{
+		client:  mgr.GetClient(),
+		scheme:  mgr.GetScheme(),
+		context: ctx,
+		cancel:  cancel,
+	}
 }
 
 // add adds a new Controller to mgr with r as the reconcile.Reconciler
@@ -53,7 +59,7 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 		return err
 	}
 
-	// Watch for changes to secondary resource and requeue the owner Mole
+	//Watch for changes to secondary resource and requeue the owner Mole
 	if err = watchSecondaryResource(c, &v12.Deployment{}); err != nil {
 		return err
 	}
@@ -91,11 +97,11 @@ var _ reconcile.Reconciler = &ReconcileMole{}
 type ReconcileMole struct {
 	// This client, initialized using mgr.Client() above, is a split client
 	// that reads objects from the cache and writes to the apiserver
-	client   client.Client
-	scheme   *runtime.Scheme
-	context  context.Context
-	cancel   context.CancelFunc
-	recorder record.EventRecorder
+	client  client.Client
+	scheme  *runtime.Scheme
+	context context.Context
+	cancel  context.CancelFunc
+	//recorder record.EventRecorder
 }
 
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
@@ -106,7 +112,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 
 	// Fetch the Mole instance
 	instance := &molev1.Mole{}
-	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
+	err := r.client.Get(r.context, request.NamespacedName, instance)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// Request object not found, could have been deleted after reconcile request.
@@ -120,7 +126,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 
 	cr := instance.DeepCopy()
 	for serviceName := range cr.Spec.Product.Service {
-		// read current state
+		//read current state
 		currentState := common.NewServiceState(serviceName)
 		err = currentState.Read(r.context, cr, r.client)
 		if err != nil {
@@ -128,11 +134,11 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 			return r.manageError(cr, err)
 		}
 
-		//TODO get desired status
+		//get desired status
 		reconciler := NewMoleReconciler(serviceName)
 		desiredState := reconciler.Reconcile(currentState, cr)
 
-		//TODO action run all
+		//run action to achieve desired status
 		actionRunner := common.NewServiceActionRunner(r.context, r.client, r.scheme, cr)
 		err = actionRunner.RunAll(desiredState)
 		if err != nil {
@@ -143,7 +149,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 }
 
 func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Result, error) {
-	r.recorder.Event(cr, "Warning", "ProcessingError", issue.Error())
+	//r.recorder.Event(cr, "Warning", "ProcessingError", issue.Error())
 	cr.Status.Phase = molev1.PhaseFailing
 	cr.Status.Message = issue.Error()
 

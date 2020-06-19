@@ -1,7 +1,7 @@
 package model
 
 const (
-	MoleServiceAccountName = "dtstack"
+	MoleServiceAccountName = "default"
 	MoleServiceName        = "mole-service"
 	MoleConfigName         = "mole-config"
 	MoleIngressName        = "mole-ingress"
@@ -10,4 +10,5 @@ const (
 	MoleHealthEndpoint     = "/api/health"
 	MoleHttpPortName       = "mole-port"
 	MoleConfigVolumeName   = "mole-mount"
+	DTSTACK_SYSTEM         = "dtstack-system"
 )
