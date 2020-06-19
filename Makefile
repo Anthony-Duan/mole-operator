@@ -18,6 +18,9 @@ sdk-gen-k8s:
 sdk-gen-crds:
 	operator-sdk generate crds
 
+sdk-run-local:
+	operator-sdk run local
+
 build-cmd:
 	go build cmd/manager/main.go
 
