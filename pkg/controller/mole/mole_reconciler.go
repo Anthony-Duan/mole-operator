@@ -24,9 +24,14 @@ func NewMoleReconciler(name string) *MoleReconciler {
 
 func (i *MoleReconciler) Reconcile(state *common.ServiceState, cr *molev1.Mole) common.DesiredServiceState {
 	desired := common.DesiredServiceState{}
+
 	desired = desired.AddAction(i.getMoleDeploymentDesiredState(state, cr))
+
 	desired = desired.AddAction(i.getMoleServiceDesiredState(state, cr))
-	desired = desired.AddAction(i.getMoleIngressDesiredState(state, cr))
+
+	if cr.Spec.Product.Service[i.Name].IsDeployIngress {
+		desired = desired.AddAction(i.getMoleIngressDesiredState(state, cr))
+	}
 
 	return desired
 }

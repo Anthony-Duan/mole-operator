@@ -36,7 +36,9 @@ func (i *ServiceState) Read(ctx context.Context, cr *molev1.Mole, client client.
 	if err != nil {
 		return err
 	}
-	err = i.readMoleIngress(ctx, cr, client)
+	if cr.Spec.Product.Service[i.Name].IsDeployIngress {
+		err = i.readMoleIngress(ctx, cr, client)
+	}
 	return err
 }
 

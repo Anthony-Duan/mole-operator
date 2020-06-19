@@ -1,11 +1,11 @@
 package mole
 
 import (
+	"container/list"
 	"context"
-	"dtstack.com/dtstack/mole-operator/pkg/controller/common"
-	"time"
-
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	"dtstack.com/dtstack/mole-operator/pkg/controller/common"
+	"fmt"
 	v12 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	v1beta12 "k8s.io/api/extensions/v1beta1"
@@ -18,6 +18,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+	"time"
 )
 
 var log = logf.Log.WithName("controller_mole")
@@ -125,7 +126,18 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 	}
 
 	cr := instance.DeepCopy()
+
+	depends := make(map[string][]string)
 	for serviceName := range cr.Spec.Product.Service {
+		depends[serviceName] = cr.Spec.Product.Service[serviceName].DependsOn
+	}
+
+	deploySeq, err := TopologySort(depends) // deploy sequence by service depends on
+	if err != nil {
+		return reconcile.Result{}, err
+	}
+
+	for _, serviceName := range deploySeq {
 		//read current state
 		currentState := common.NewServiceState(serviceName)
 		err = currentState.Read(r.context, cr, r.client)
@@ -145,6 +157,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 			return r.manageError(cr, err)
 		}
 	}
+
 	return reconcile.Result{}, nil
 }
 
@@ -163,4 +176,38 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 	}
 
 	return reconcile.Result{RequeueAfter: time.Second * 10}, nil
+}
+
+func TopologySort(depends map[string][]string) ([]string, error) {
+	queue := list.New()
+	result := make([]string, 0)
+	names := make([]string, 0)
+	count := make(map[string]int)
+
+	for name, dependList := range depends { // init topo
+		count[name] = len(dependList)
+		names = append(names, name)
+	}
+
+	for _, name := range names { // add no depends service in queue
+		if len(depends[name]) == 0 {
+			queue.PushBack(name)
+		}
+	}
+	for queue.Len() > 0 {
+		top := queue.Front()
+		queue.Remove(top)
+		serviceName := top.Value.(string)
+		result = append(result, serviceName)
+		for _, depend := range depends[serviceName] {
+			count[depend]--
+			if count[depend] == 0 { // add no depends service in queue
+				queue.PushBack(depend)
+			}
+		}
+	}
+	if len(result) < len(names) {
+		return nil, fmt.Errorf("can't deploy product on this depends")
+	}
+	return result, nil
 }
