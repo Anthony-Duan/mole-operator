@@ -158,7 +158,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 		}
 	}
 
-	return reconcile.Result{}, nil
+	return r.manageSuccess(cr)
 }
 
 func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Result, error) {
@@ -176,6 +176,16 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 	}
 
 	return reconcile.Result{RequeueAfter: time.Second * 10}, nil
+}
+
+func (r *ReconcileMole) manageSuccess(cr *molev1.Mole) (reconcile.Result, error) {
+	cr.Status.Phase = molev1.PhaseReconciling
+	cr.Status.Message = PRODUCT_DEPLOY_SUCCESS
+	err := r.client.Status().Update(r.context, cr)
+	if err != nil {
+		return r.manageError(cr, err)
+	}
+	return reconcile.Result{}, nil
 }
 
 func TopologySort(depends map[string][]string) ([]string, error) {
