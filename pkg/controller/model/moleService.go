@@ -16,7 +16,7 @@ func getServiceLabels(cr *molev1.Mole, name string) map[string]string {
 }
 
 func getServiceAnnotations(cr *molev1.Mole, existing map[string]string, name string) map[string]string {
-	if cr.Spec.Product.Service[name].Instance.Service.Annotations == nil {
+	if cr.Spec.Product.Service[name].Instance.Service == nil || cr.Spec.Product.Service[name].Instance.Service.Annotations == nil {
 		return existing
 	}
 	return MergeAnnotations(cr.Spec.Product.Service[name].Instance.Service.Annotations, existing)

@@ -1091,7 +1091,7 @@ spec:
                                   type: object
                                 enabled:
                                   type: boolean
-                                host_name:
+                                hostname:
                                   type: string
                                 labels:
                                   additionalProperties:

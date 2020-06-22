@@ -16,7 +16,7 @@ func getIngressTLS(cr *molev1.Mole, name string) []v1beta1.IngressTLS {
 	if cr.Spec.Product.Service[name].Instance.Ingress.TLSEnabled {
 		return []v1beta1.IngressTLS{
 			{
-				Hosts:      []string{cr.Spec.Product.Service[name].Instance.Ingress.Hostname},
+				Hosts:      []string{GetHost(cr, name)},
 				SecretName: cr.Spec.Product.Service[name].Instance.Ingress.TLSSecretName,
 			},
 		}
@@ -29,7 +29,7 @@ func getIngressSpec(cr *molev1.Mole, name string) v1beta1.IngressSpec {
 		TLS: getIngressTLS(cr, name),
 		Rules: []v1beta1.IngressRule{
 			{
-				Host: cr.Spec.Product.Service[name].Instance.Ingress.Hostname,
+				Host: GetHost(cr, name),
 				IngressRuleValue: v1beta1.IngressRuleValue{
 					HTTP: &v1beta1.HTTPIngressRuleValue{
 						Paths: getIngressRulePaths(cr, name),

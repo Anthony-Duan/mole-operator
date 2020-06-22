@@ -56,7 +56,7 @@ type SchemaConfig struct {
 type MoleIngress struct {
 	Annotations   map[string]string `json:"annotations,omitempty"`
 	Labels        map[string]string `json:"labels,omitempty"`
-	Hostname      string            `json:"host_name,omitempty"`
+	Hostname      string            `json:"hostname,omitempty"`
 	Path          string            `json:"path,omitempty"`
 	Enabled       bool              `json:"enabled,omitempty"`
 	TLSEnabled    bool              `json:"tlsEnabled,omitempty"`

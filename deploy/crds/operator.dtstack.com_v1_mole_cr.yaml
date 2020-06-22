@@ -12,12 +12,9 @@ spec:
       "nginx":
         is_deploy_ingress: true
         instance:
-          image: nginx:latest
           config_path : /config
-          service:
-            annotations:
-              "name": test
           deployment:
+            image: nginx:latest
+            replicas: 1
             ports:
               - 80
-              - 81
