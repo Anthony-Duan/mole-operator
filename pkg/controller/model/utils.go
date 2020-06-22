@@ -26,6 +26,6 @@ func BuildResourceLabel(parentProductName, productName, serviceName string) stri
 func BuildConfigMapName(parentProductName, productName, productVersion, serviceName, configName string) string {
 	return fmt.Sprintf("%v-%v-%v-%v-%v", parentProductName, productName, productVersion, serviceName, configName)
 }
-func BuildPortName(serviceName, portName string) string {
-	return fmt.Sprintf("%v-%v", serviceName, portName)
+func BuildPortName(serviceName string, index int) string {
+	return fmt.Sprintf("%v-%v", serviceName, index)
 }

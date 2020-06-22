@@ -24,8 +24,6 @@ type Instance struct {
 	Environment    map[string]string        `json:"environment,omitempty"`
 	Cmd            string                   `json:"cmd,omitempty,omitempty"`
 	PrometheusPort string                   `json:"prometheus_port,omitempty"`
-	Image          string                   `json:"image,omitempty"`
-	ContainerPort  int                      `json:"container_port,omitempty"`
 	Ingress        *MoleIngress             `json:"ingress,omitempty"`
 	Service        *MoleService             `json:"service,omitempty"`
 	Deployment     *MoleDeployment          `json:"deployment,omitempty"`
@@ -57,8 +55,8 @@ type SchemaConfig struct {
 // MoleIngress provides a means to configure the ingress created
 type MoleIngress struct {
 	Annotations   map[string]string `json:"annotations,omitempty"`
-	Hostname      string            `json:"hostname,omitempty"`
 	Labels        map[string]string `json:"labels,omitempty"`
+	Hostname      string            `json:"host_name,omitempty"`
 	Path          string            `json:"path,omitempty"`
 	Enabled       bool              `json:"enabled,omitempty"`
 	TLSEnabled    bool              `json:"tlsEnabled,omitempty"`
@@ -78,12 +76,20 @@ type MoleService struct {
 type MoleDeployment struct {
 	Annotations                   map[string]string      `json:"annotations,omitempty"`
 	Labels                        map[string]string      `json:"labels,omitempty"`
-	Replicas                      int32                  `json:"replicas"`
+	Replicas                      int32                  `json:"replicas,omitempty"`
+	Image                         string                 `json:"image,omitempty"`
+	Ports                         []int                  `json:"ports,omitempty"`
+	Containers                    []MoleContainer        `json:"containers,omitempty"`
 	NodeSelector                  map[string]string      `json:"nodeSelector,omitempty"`
 	Tolerations                   []v1.Toleration        `json:"tolerations,omitempty"`
 	Affinity                      *v1.Affinity           `json:"affinity,omitempty"`
 	SecurityContext               *v1.PodSecurityContext `json:"securityContext,omitempty"`
-	TerminationGracePeriodSeconds int64                  `json:"terminationGracePeriodSeconds"`
+	TerminationGracePeriodSeconds int64                  `json:"terminationGracePeriodSeconds,omitempty"`
+}
+
+type MoleContainer struct {
+	Image string `json:"image,omitempty"`
+	Name  string `json:"name,omitempty"`
 }
 
 // MoleSpec defines the desired state of Mole

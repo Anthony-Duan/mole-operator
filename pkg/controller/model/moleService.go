@@ -32,20 +32,20 @@ func getServiceType(cr *molev1.Mole, name string) v1.ServiceType {
 	return cr.Spec.Product.Service[name].Instance.Service.Type
 }
 
-func GetMolePort(cr *molev1.Mole, name string) int {
-	return cr.Spec.Product.Service[name].Instance.ContainerPort
-}
+//func GetMolePort(cr *molev1.Mole, name string, index int) int {
+//	return cr.Spec.Product.Service[name].Instance.Deployment.Ports[index]
+//}
 
-func getServicePorts(cr *molev1.Mole, currentState *v1.Service, name string) []v1.ServicePort {
-	ContainerPort := int32(GetMolePort(cr, name))
-	portName := BuildPortName(name, MoleHttpPortName)
-	defaultPorts := []v1.ServicePort{
-		{
-			Name:       portName,
+func getServicePorts(cr *molev1.Mole, name string) []v1.ServicePort {
+	//portName := BuildPortName(name, MoleHttpPortName)
+	defaultPorts := make([]v1.ServicePort, 0)
+	for index, port := range cr.Spec.Product.Service[name].Instance.Deployment.Ports {
+		defaultPorts = append(defaultPorts, v1.ServicePort{
+			Name:       BuildPortName(name, index),
 			Protocol:   "TCP",
-			Port:       ContainerPort,
-			TargetPort: intstr.FromString(portName),
-		},
+			Port:       int32(port),
+			TargetPort: intstr.FromString(BuildPortName(name, index)),
+		})
 	}
 	if cr.Spec.Product.Service[name].Instance.Service == nil {
 		return defaultPorts
@@ -62,7 +62,7 @@ func MoleService(cr *molev1.Mole, name string) *v1.Service {
 			Annotations: getServiceAnnotations(cr, nil, name),
 		},
 		Spec: v1.ServiceSpec{
-			Ports: getServicePorts(cr, nil, name),
+			Ports: getServicePorts(cr, name),
 			Selector: map[string]string{
 				"app": BuildResourceLabel(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			},
@@ -76,7 +76,7 @@ func MoleServiceReconciled(cr *molev1.Mole, currentState *v1.Service, name strin
 	reconciled := currentState.DeepCopy()
 	reconciled.Labels = getServiceLabels(cr, name)
 	reconciled.Annotations = getServiceAnnotations(cr, currentState.Annotations, name)
-	reconciled.Spec.Ports = getServicePorts(cr, currentState, name)
+	reconciled.Spec.Ports = getServicePorts(cr, name)
 	reconciled.Spec.Type = getServiceType(cr, name)
 	return reconciled
 }

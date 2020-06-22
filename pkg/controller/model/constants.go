@@ -9,6 +9,7 @@ const (
 	MolePodName            = "mole-pod"
 	MoleHealthEndpoint     = "/api/health"
 	MoleHttpPortName       = "mole-port"
-	MoleConfigVolumeName   = "mole-mount"
+	MoleConfigVolumeName   = "mole-config"
+	MoleLogsVolumeName     = "mole-log"
 	DTSTACK_SYSTEM         = "dtstack-system"
 )

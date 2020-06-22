@@ -29,23 +29,28 @@ func getIngressSpec(cr *molev1.Mole, name string) v1beta1.IngressSpec {
 		TLS: getIngressTLS(cr, name),
 		Rules: []v1beta1.IngressRule{
 			{
-				Host: GetHost(cr, name),
+				Host: cr.Spec.Product.Service[name].Instance.Ingress.Hostname,
 				IngressRuleValue: v1beta1.IngressRuleValue{
 					HTTP: &v1beta1.HTTPIngressRuleValue{
-						Paths: []v1beta1.HTTPIngressPath{
-							{
-								Path: GetPath(cr, name),
-								Backend: v1beta1.IngressBackend{
-									ServiceName: BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-									ServicePort: GetIngressTargetPort(cr, name),
-								},
-							},
-						},
+						Paths: getIngressRulePaths(cr, name),
 					},
 				},
 			},
 		},
 	}
+}
+
+func getIngressRulePaths(cr *molev1.Mole, name string) []v1beta1.HTTPIngressPath {
+	paths := make([]v1beta1.HTTPIngressPath, 0)
+	for _, port := range cr.Spec.Product.Service[name].Instance.Deployment.Ports {
+		paths = append(paths, v1beta1.HTTPIngressPath{
+			Backend: v1beta1.IngressBackend{
+				ServiceName: BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+				ServicePort: intstr.FromInt(port),
+			},
+		})
+	}
+	return paths
 }
 
 func MoleIngress(cr *molev1.Mole, name string) *v1beta1.Ingress {
@@ -103,16 +108,16 @@ func GetPath(cr *molev1.Mole, name string) string {
 	return cr.Spec.Product.Service[name].Instance.Ingress.Path
 }
 
-func GetIngressTargetPort(cr *molev1.Mole, name string) intstr.IntOrString {
-	defaultPort := intstr.FromInt(GetMolePort(cr, name))
-
-	if cr.Spec.Product.Service[name].Instance.Ingress == nil {
-		return defaultPort
-	}
-
-	if cr.Spec.Product.Service[name].Instance.Ingress.TargetPort == "" {
-		return defaultPort
-	}
-
-	return intstr.FromString(cr.Spec.Product.Service[name].Instance.Ingress.TargetPort)
-}
+//func GetIngressTargetPort(cr *molev1.Mole, name string) intstr.IntOrString {
+//	defaultPort := intstr.FromInt(GetMolePort(cr, name))
+//
+//	if cr.Spec.Product.Service[name].Instance.Ingress == nil {
+//		return defaultPort
+//	}
+//
+//	if cr.Spec.Product.Service[name].Instance.Ingress.TargetPort == "" {
+//		return defaultPort
+//	}
+//
+//	return intstr.FromString(cr.Spec.Product.Service[name].Instance.Ingress.TargetPort)
+//}

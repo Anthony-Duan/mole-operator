@@ -2,7 +2,6 @@ package model
 
 import (
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
-	"fmt"
 	v1 "k8s.io/api/apps/v1"
 	v13 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -51,7 +50,7 @@ func getPodAnnotations(cr *molev1.Mole, existing map[string]string, name string)
 	var annotations = map[string]string{}
 	// Add fixed annotations
 	annotations["prometheus.io/scrape"] = "true"
-	annotations["prometheus.io/port"] = fmt.Sprintf("%v", GetMolePort(cr, name))
+	//annotations["prometheus.io/port"] = fmt.Sprintf("%v", GetMolePort(cr, name))
 	annotations = MergeAnnotations(annotations, existing)
 
 	if cr.Spec.Product.Service[name].Instance.Deployment != nil {
@@ -112,6 +111,14 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 			},
 		},
 	})
+
+	//Volume to mount emptyDir to share logs
+	volumes = append(volumes, v13.Volume{
+		Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+		VolumeSource: v13.VolumeSource{
+			EmptyDir: &v13.EmptyDirVolumeSource{},
+		},
+	})
 	return volumes
 }
 
@@ -126,33 +133,27 @@ func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	return mounts
 }
 
-func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *v13.Probe {
-	return &v13.Probe{
-		Handler: v13.Handler{
-			HTTPGet: &v13.HTTPGetAction{
-				Path: MoleHealthEndpoint,
-				Port: intstr.FromInt(GetMolePort(cr, name)),
-			},
-		},
-		InitialDelaySeconds: delay,
-		TimeoutSeconds:      timeout,
-		FailureThreshold:    failure,
-	}
-}
+//func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *v13.Probe {
+//	return &v13.Probe{
+//		Handler: v13.Handler{
+//			HTTPGet: &v13.HTTPGetAction{
+//				Path: MoleHealthEndpoint,
+//				Port: intstr.FromInt(GetMolePort(cr, name)),
+//			},
+//		},
+//		InitialDelaySeconds: delay,
+//		TimeoutSeconds:      timeout,
+//		FailureThreshold:    failure,
+//	}
+//}
 
 func getContainers(cr *molev1.Mole, name string) []v13.Container {
 	var containers []v13.Container
 	containers = append(containers, v13.Container{
-		Name:       name,
-		Image:      cr.Spec.Product.Service[name].Instance.Image,
-		WorkingDir: "",
-		Ports: []v13.ContainerPort{
-			{
-				Name:          name,
-				ContainerPort: int32(GetMolePort(cr, name)),
-				Protocol:      "TCP",
-			},
-		},
+		Name:         name,
+		Image:        cr.Spec.Product.Service[name].Instance.Deployment.Image,
+		WorkingDir:   "",
+		Ports:        getContainerPorts(cr, name),
 		VolumeMounts: getVolumeMounts(cr, name),
 		//LivenessProbe:            getProbe(cr, 60, 30, 10, name),
 		//ReadinessProbe:           getProbe(cr, 5, 3, 1, name),
@@ -160,8 +161,29 @@ func getContainers(cr *molev1.Mole, name string) []v13.Container {
 		//TerminationMessagePolicy: "File",
 		ImagePullPolicy: "IfNotPresent",
 	})
+	for _, container := range cr.Spec.Product.Service[name].Instance.Deployment.Containers {
+		containers = append(containers, v13.Container{
+			Name:            container.Name,
+			Image:           container.Image,
+			VolumeMounts:    getVolumeMounts(cr, name),
+			ImagePullPolicy: "IfNotPresent",
+		})
+	}
 
 	return containers
+}
+
+func getContainerPorts(cr *molev1.Mole, name string) []v13.ContainerPort {
+	//portName := BuildPortName(name, MoleHttpPortName)
+	defaultPorts := make([]v13.ContainerPort, 0)
+	for index, port := range cr.Spec.Product.Service[name].Instance.Deployment.Ports {
+		defaultPorts = append(defaultPorts, v13.ContainerPort{
+			Name:          BuildPortName(name, index),
+			Protocol:      "TCP",
+			ContainerPort: int32(port),
+		})
+	}
+	return defaultPorts
 }
 
 func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name string) v1.DeploymentSpec {
@@ -185,6 +207,7 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 				SecurityContext: getSecurityContext(cr, name),
 				Volumes:         getVolumes(cr, name),
 				Containers:      getContainers(cr, name),
+				//RestartPolicy:   v13.RestartPolicyAlways,
 				//ServiceAccountName: MoleServiceAccountName,
 				//TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
 			},

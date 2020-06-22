@@ -10,10 +10,14 @@ spec:
     parent_product_name: dtest
     service:
       "nginx":
+        is_deploy_ingress: true
         instance:
           image: nginx:latest
-          container_port: 8080
           config_path : /config
           service:
             annotations:
               "name": test
+          deployment:
+            ports:
+              - 80
+              - 81
