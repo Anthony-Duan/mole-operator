@@ -7,13 +7,21 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
+	"strings"
 )
 
 func getServiceLabels(cr *molev1.Mole, name string) map[string]string {
 	var labels = map[string]string{}
-	labels["deploy_uuid"] = cr.Spec.Product.DeployUUid
-	labels["clusterId"] = strconv.Itoa(cr.Spec.Product.ClusterId)
+
 	labels["pid"] = strconv.Itoa(cr.Spec.Product.Pid)
+	labels["deploy_uuid"] = cr.Spec.Product.DeployUUid
+	labels["cluster_id"] = strconv.Itoa(cr.Spec.Product.ClusterId)
+	labels["product_name"] = cr.Spec.Product.ProductName
+	labels["product_version"] = cr.Spec.Product.ProductVersion
+	labels["parent_product_name"] = cr.Spec.Product.ParentProductName
+	labels["service_name"] = name
+	labels["service_version"] = cr.Spec.Product.Service[name].Version
+
 	return labels
 }
 
@@ -56,9 +64,10 @@ func getServicePorts(cr *molev1.Mole, name string) []v1.ServicePort {
 }
 
 func MoleService(cr *molev1.Mole, name string) *v1.Service {
+	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return &v1.Service{
 		ObjectMeta: v12.ObjectMeta{
-			Name:        BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+			Name:        BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
 			Namespace:   cr.Namespace,
 			Labels:      getServiceLabels(cr, name),
 			Annotations: getServiceAnnotations(cr, nil, name),
@@ -84,8 +93,9 @@ func MoleServiceReconciled(cr *molev1.Mole, currentState *v1.Service, name strin
 }
 
 func MoleServiceSelector(cr *molev1.Mole, name string) client.ObjectKey {
+	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
-		Name:      BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+		Name:      BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
 	}
 }

@@ -15,8 +15,8 @@ func MergeAnnotations(requested map[string]string, existing map[string]string) m
 	return existing
 }
 
-func BuildResourceName(resourceType, parentProductName, productName, serviceName string) string {
-	return fmt.Sprintf("%v-%v-%v-%v", resourceType, parentProductName, productName, serviceName)
+func BuildResourceName(resourceType, parentProductName, productName, productVersion, serviceName string) string {
+	return fmt.Sprintf("%v-%v-%v-%v-%v", resourceType, parentProductName, productName, productVersion, serviceName)
 }
 
 func BuildResourceLabel(parentProductName, productName, serviceName string) string {

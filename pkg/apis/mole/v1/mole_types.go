@@ -45,7 +45,7 @@ type ServiceConfig struct {
 
 type SchemaConfig struct {
 	Pid                int                      `json:"pid,omitempty"`
-	ClusterId          int                      `json:"clusterId,omitempty"`
+	ClusterId          int                      `json:"cluster_id,omitempty"`
 	DeployUUid         string                   `json:"deploy_uuid,omitempty"`
 	ParentProductName  string                   `json:"parent_product_name,omitempty"`
 	ProductName        string                   `json:"product_name,omitempty"`
