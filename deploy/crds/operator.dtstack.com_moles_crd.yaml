@@ -14,7 +14,6 @@ spec:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: Mole is the Schema for the moles API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -29,13 +28,8 @@ spec:
           metadata:
             type: object
           spec:
-            description: MoleSpec defines the desired state of Mole
             properties:
               product:
-                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                  Important: Run "operator-sdk generate k8s" to regenerate code after
-                  modifying this file Add custom validation using kubebuilder tags:
-                  https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html'
                 properties:
                   cluster_id:
                     type: integer
@@ -79,8 +73,6 @@ spec:
                                 type: string
                               type: array
                             deployment:
-                              description: MoleDeployment provides a means to configure
-                                the deployment
                               properties:
                                 affinity:
                                   description: Affinity is a group of affinity scheduling
@@ -1086,8 +1078,6 @@ spec:
                                 type: string
                               type: object
                             ingress:
-                              description: MoleIngress provides a means to cnfigure
-                                the ingress created
                               properties:
                                 annotations:
                                   additionalProperties:
@@ -1145,8 +1135,6 @@ spec:
                                   type: object
                               type: object
                             service:
-                              description: MoleService provides a means to configure
-                                the service
                               properties:
                                 annotations:
                                   additionalProperties:
@@ -1243,15 +1231,10 @@ spec:
                 type: object
             type: object
           status:
-            description: MoleStatus defines the observed state of Mole
             properties:
               message:
                 type: string
               phase:
-                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "operator-sdk generate k8s" to regenerate
-                  code after modifying this file Add custom validation using kubebuilder
-                  tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html'
                 type: string
             required:
             - message
@@ -1260,5 +1243,3 @@ spec:
         type: object
     served: true
     storage: true
-    subresources:
-      status: {}

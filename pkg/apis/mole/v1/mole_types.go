@@ -5,8 +5,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 type StatusPhase string
 
 var (
@@ -54,7 +52,6 @@ type SchemaConfig struct {
 	Service            map[string]ServiceConfig `json:"service"`
 }
 
-// MoleIngress provides a means to cnfigure the ingress created
 type MoleIngress struct {
 	Annotations   map[string]string `json:"annotations,omitempty"`
 	Labels        map[string]string `json:"labels,omitempty"`
@@ -66,7 +63,6 @@ type MoleIngress struct {
 	TargetPort    string            `json:"targetPort,omitempty"`
 }
 
-// MoleService provides a means to configure the service
 type MoleService struct {
 	Annotations map[string]string `json:"annotations,omitempty"`
 	Labels      map[string]string `json:"labels,omitempty"`
@@ -74,7 +70,6 @@ type MoleService struct {
 	Ports       []v1.ServicePort  `json:"ports,omitempty"`
 }
 
-// MoleDeployment provides a means to configure the deployment
 type MoleDeployment struct {
 	Annotations                   map[string]string      `json:"annotations,omitempty"`
 	Labels                        map[string]string      `json:"labels,omitempty"`
@@ -94,28 +89,15 @@ type MoleContainer struct {
 	Name  string `json:"name,omitempty"`
 }
 
-// MoleSpec defines the desired state of Mole
 type MoleSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
-	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
 	Product SchemaConfig `json:"product,omitempty"`
 }
 
-// MoleStatus defines the observed state of Mole
 type MoleStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
-	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
 	Phase   StatusPhase `json:"phase"`
 	Message string      `json:"message"`
 }
 
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// Mole is the Schema for the moles API
-// +kubebuilder:subresource:status
-// +kubebuilder:resource:path=moles,scope=Namespaced
 type Mole struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -124,9 +106,6 @@ type Mole struct {
 	Status MoleStatus `json:"status,omitempty"`
 }
 
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// MoleList contains a list of Mole
 type MoleList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

@@ -16,8 +16,8 @@ sdk-gen-k8s:
 	operator-sdk generate k8s
 
 sdk-gen-crds:
+    # operator-sdk generate crds --crd-version v1beta1
 	operator-sdk generate crds
-
 sdk-run-local:
 	operator-sdk run local --watch-namespace=dtstack-system
 
