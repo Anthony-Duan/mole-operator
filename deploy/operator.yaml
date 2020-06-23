@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mole-operator
+  namespace: dtstack-system
 spec:
   replicas: 1
   selector:
@@ -12,19 +13,17 @@ spec:
       labels:
         name: mole-operator
     spec:
-      serviceAccountName: mole-operator
+      serviceAccountName: dtstack
       containers:
         - name: mole-operator
           # Replace this with the built image name
-          image: REPLACE_IMAGE
+          image: registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.0
           command:
-          - mole-operator
-          imagePullPolicy: Always
+            - mole-operator
+          imagePullPolicy: Never
           env:
             - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+              value: "dtstack-system"
             - name: POD_NAME
               valueFrom:
                 fieldRef:

@@ -233,7 +233,7 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 				Volumes:         getVolumes(cr, name),
 				Containers:      getContainers(cr, name),
 				//RestartPolicy:   v13.RestartPolicyAlways,
-				//ServiceAccountName: MoleServiceAccountName,
+				ServiceAccountName: MoleServiceAccountName,
 				//TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
 			},
 		},
