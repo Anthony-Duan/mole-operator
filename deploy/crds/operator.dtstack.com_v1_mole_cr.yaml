@@ -8,6 +8,9 @@ spec:
     product_name: wxtest
     product_version: v1.0.0
     parent_product_name: dtest
+    deploy_uuid: wx-test-test
+    clusterId: 1
+    pid: 1
     service:
       "nginx":
         is_deploy_ingress: true

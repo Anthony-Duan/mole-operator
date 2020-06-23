@@ -35,3 +35,11 @@ This will scaffold the Mole resource API under pkg/apis/operator/v1/...
 operator-sdk add controller --api-version=operator.dtstack.com/v1 --kind=Mole
 
 This will scaffold a new Controller implementation under pkg/controller/mole/....
+
+## Resource Naming conventions
+name: resourceType-parentProductName-productName-productVersion-serviceName
+
+label: parentProductName-productName-serviceName
+
+
+

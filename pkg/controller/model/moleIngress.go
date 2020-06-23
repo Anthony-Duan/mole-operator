@@ -6,6 +6,7 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strconv"
 )
 
 func getIngressTLS(cr *molev1.Mole, name string) []v1beta1.IngressTLS {
@@ -67,7 +68,7 @@ func MoleIngress(cr *molev1.Mole, name string) *v1beta1.Ingress {
 
 func MoleIngressReconciled(cr *molev1.Mole, currentState *v1beta1.Ingress, name string) *v1beta1.Ingress {
 	reconciled := currentState.DeepCopy()
-	reconciled.Labels = GetIngressLabels(cr, name)
+	//reconciled.Labels = GetIngressLabels(cr, name)
 	reconciled.Annotations = GetIngressAnnotations(cr, currentState.Annotations, name)
 	reconciled.Spec = getIngressSpec(cr, name)
 	return reconciled
@@ -81,10 +82,11 @@ func MoleIngressSelector(cr *molev1.Mole, name string) client.ObjectKey {
 }
 
 func GetIngressLabels(cr *molev1.Mole, name string) map[string]string {
-	if cr.Spec.Product.Service[name].Instance.Ingress == nil {
-		return nil
-	}
-	return cr.Spec.Product.Service[name].Instance.Ingress.Labels
+	var labels = map[string]string{}
+	labels["deploy_uuid"] = cr.Spec.Product.DeployUUid
+	labels["clusterId"] = strconv.Itoa(cr.Spec.Product.ClusterId)
+	labels["pid"] = strconv.Itoa(cr.Spec.Product.Pid)
+	return labels
 }
 
 func GetIngressAnnotations(cr *molev1.Mole, existing map[string]string, name string) map[string]string {

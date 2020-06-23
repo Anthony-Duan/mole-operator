@@ -6,13 +6,15 @@ import (
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strconv"
 )
 
 func getServiceLabels(cr *molev1.Mole, name string) map[string]string {
-	if cr.Spec.Product.Service[name].Instance.Service == nil {
-		return nil
-	}
-	return cr.Spec.Product.Service[name].Instance.Service.Labels
+	var labels = map[string]string{}
+	labels["deploy_uuid"] = cr.Spec.Product.DeployUUid
+	labels["clusterId"] = strconv.Itoa(cr.Spec.Product.ClusterId)
+	labels["pid"] = strconv.Itoa(cr.Spec.Product.Pid)
+	return labels
 }
 
 func getServiceAnnotations(cr *molev1.Mole, existing map[string]string, name string) map[string]string {

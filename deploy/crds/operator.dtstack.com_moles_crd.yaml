@@ -37,13 +37,17 @@ spec:
                   modifying this file Add custom validation using kubebuilder tags:
                   https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html'
                 properties:
+                  clusterId:
+                    type: integer
+                  deploy_uuid:
+                    type: string
                   parent_product_name:
                     type: string
+                  pid:
+                    type: integer
                   product_name:
                     type: string
                   product_name_display:
-                    type: string
-                  product_uuid:
                     type: string
                   product_version:
                     type: string
@@ -1082,7 +1086,7 @@ spec:
                                 type: string
                               type: object
                             ingress:
-                              description: MoleIngress provides a means to configure
+                              description: MoleIngress provides a means to cnfigure
                                 the ingress created
                               properties:
                                 annotations:

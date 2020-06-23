@@ -7,6 +7,7 @@ import (
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strconv"
 )
 
 func getAffinities(cr *molev1.Mole, name string) *v13.Affinity {
@@ -61,10 +62,17 @@ func getPodAnnotations(cr *molev1.Mole, existing map[string]string, name string)
 
 func getPodLabels(cr *molev1.Mole, name string) map[string]string {
 	var labels = map[string]string{}
-	if cr.Spec.Product.Service[name].Instance.Deployment != nil && cr.Spec.Product.Service[name].Instance.Deployment.Labels != nil {
-		labels = cr.Spec.Product.Service[name].Instance.Deployment.Labels
-	}
 	labels["app"] = BuildResourceLabel(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name)
+	labels["deploy_uuid"] = cr.Spec.Product.DeployUUid
+	labels["clusterId"] = strconv.Itoa(cr.Spec.Product.ClusterId)
+	labels["pid"] = strconv.Itoa(cr.Spec.Product.Pid)
+	return labels
+}
+func getDeploymentLabels(cr *molev1.Mole, name string) map[string]string {
+	var labels = map[string]string{}
+	labels["deploy_uuid"] = cr.Spec.Product.DeployUUid
+	labels["clusterId"] = strconv.Itoa(cr.Spec.Product.ClusterId)
+	labels["pid"] = strconv.Itoa(cr.Spec.Product.Pid)
 	return labels
 }
 
@@ -223,6 +231,7 @@ func MoleDeployment(cr *molev1.Mole, name string) *v1.Deployment {
 	return &v1.Deployment{
 		ObjectMeta: v12.ObjectMeta{
 			Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+			Labels:    getDeploymentLabels(cr, name),
 			Namespace: cr.Namespace,
 		},
 		Spec: getDeploymentSpec(cr, nil, name),
@@ -231,6 +240,7 @@ func MoleDeployment(cr *molev1.Mole, name string) *v1.Deployment {
 
 func MoleDeploymentReconciled(cr *molev1.Mole, currentState *v1.Deployment, name string) *v1.Deployment {
 	reconciled := currentState.DeepCopy()
+	reconciled.Labels = getDeploymentLabels(cr, name)
 	reconciled.Spec = getDeploymentSpec(cr, currentState.Spec.Template.Annotations, name)
 	return reconciled
 }

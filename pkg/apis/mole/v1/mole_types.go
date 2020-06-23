@@ -44,15 +44,17 @@ type ServiceConfig struct {
 }
 
 type SchemaConfig struct {
+	Pid                int                      `json:"pid,omitempty"`
+	ClusterId          int                      `json:"clusterId,omitempty"`
+	DeployUUid         string                   `json:"deploy_uuid,omitempty"`
 	ParentProductName  string                   `json:"parent_product_name,omitempty"`
 	ProductName        string                   `json:"product_name,omitempty"`
 	ProductNameDisplay string                   `json:"product_name_display,omitempty"`
 	ProductVersion     string                   `json:"product_version,omitempty"`
-	ProductUUid        string                   `json:"product_uuid,omitempty"`
 	Service            map[string]ServiceConfig `json:"service"`
 }
 
-// MoleIngress provides a means to configure the ingress created
+// MoleIngress provides a means to cnfigure the ingress created
 type MoleIngress struct {
 	Annotations   map[string]string `json:"annotations,omitempty"`
 	Labels        map[string]string `json:"labels,omitempty"`
