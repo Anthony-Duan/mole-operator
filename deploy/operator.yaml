@@ -23,7 +23,7 @@ spec:
           imagePullPolicy: Never
           env:
             - name: WATCH_NAMESPACE
-              value: "dtstack-system"
+              value: ""
             - name: POD_NAME
               valueFrom:
                 fieldRef:

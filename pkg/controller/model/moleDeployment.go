@@ -73,6 +73,7 @@ func getPodLabels(cr *molev1.Mole, name string) map[string]string {
 	labels["parent_product_name"] = cr.Spec.Product.ParentProductName
 	labels["service_name"] = name
 	labels["service_version"] = cr.Spec.Product.Service[name].Version
+	labels["group"] = cr.Spec.Product.Service[name].Group
 
 	return labels
 }
@@ -87,6 +88,7 @@ func getDeploymentLabels(cr *molev1.Mole, name string) map[string]string {
 	labels["parent_product_name"] = cr.Spec.Product.ParentProductName
 	labels["service_name"] = name
 	labels["service_version"] = cr.Spec.Product.Service[name].Version
+	labels["group"] = cr.Spec.Product.Service[name].Group
 
 	return labels
 }
@@ -233,7 +235,7 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 				Volumes:         getVolumes(cr, name),
 				Containers:      getContainers(cr, name),
 				//RestartPolicy:   v13.RestartPolicyAlways,
-				ServiceAccountName: MoleServiceAccountName,
+				//ServiceAccountName: MoleServiceAccountName,
 				//TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
 			},
 		},
