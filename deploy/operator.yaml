@@ -14,16 +14,17 @@ spec:
         name: mole-operator
     spec:
       serviceAccountName: dtstack
+      imagePullSecrets:
+        - name: dtstack
       containers:
         - name: mole-operator
-          # Replace this with the built image name
           image: registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.0
+          imagePullPolicy: Always
           command:
             - mole-operator
-          imagePullPolicy: Never
           env:
             - name: WATCH_NAMESPACE
-              value: ""
+              value: "dtstack-system"
             - name: POD_NAME
               valueFrom:
                 fieldRef:

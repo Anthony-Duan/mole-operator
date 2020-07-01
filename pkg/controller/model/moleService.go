@@ -7,7 +7,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
-	"strings"
 )
 
 func getServiceLabels(cr *molev1.Mole, name string) map[string]string {
@@ -65,10 +64,9 @@ func getServicePorts(cr *molev1.Mole, name string) []v1.ServicePort {
 }
 
 func MoleService(cr *molev1.Mole, name string) *v1.Service {
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return &v1.Service{
 		ObjectMeta: v12.ObjectMeta{
-			Name:        BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+			Name:        BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			Namespace:   cr.Namespace,
 			Labels:      getServiceLabels(cr, name),
 			Annotations: getServiceAnnotations(cr, nil, name),
@@ -94,9 +92,8 @@ func MoleServiceReconciled(cr *molev1.Mole, currentState *v1.Service, name strin
 }
 
 func MoleServiceSelector(cr *molev1.Mole, name string) client.ObjectKey {
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
-		Name:      BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+		Name:      BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 	}
 }

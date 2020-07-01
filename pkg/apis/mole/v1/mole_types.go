@@ -16,7 +16,7 @@ var (
 type ConfigMap map[string]string
 
 type Instance struct {
-	ConfigPath     string                   `json:"config_path,omitempty"`
+	ConfigPaths    []string                 `json:"config_path,omitempty"`
 	Logs           []string                 `json:"logs,omitempty"`
 	DataDir        []string                 `json:"data_dir,omitempty"`
 	Environment    map[string]string        `json:"environment,omitempty"`

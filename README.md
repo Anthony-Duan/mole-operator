@@ -37,8 +37,7 @@ operator-sdk add controller --api-version=operator.dtstack.com/v1 --kind=Mole
 This will scaffold a new Controller implementation under pkg/controller/mole/....
 
 ## Resource Naming conventions
-name: resourceType-parentProductName-productName-productVersion-serviceName
-
+name: resourceType-parentProductName-productName-serviceName
 label: parentProductName-productName-serviceName
 
 

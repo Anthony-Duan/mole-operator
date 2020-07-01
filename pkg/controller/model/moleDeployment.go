@@ -8,7 +8,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
-	"strings"
 )
 
 func getAffinities(cr *molev1.Mole, name string) *v13.Affinity {
@@ -125,14 +124,13 @@ func getTolerations(cr *molev1.Mole, name string) []v13.Toleration {
 
 func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 	var volumes []v13.Volume
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	// Volume to mount the config file from a configMap
 	volumes = append(volumes, v13.Volume{
-		Name: BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+		Name: BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 		VolumeSource: v13.VolumeSource{
 			ConfigMap: &v13.ConfigMapVolumeSource{
 				LocalObjectReference: v13.LocalObjectReference{
-					Name: BuildConfigMapName(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, cr.Spec.Product.ProductVersion, name, MoleConfigName),
+					Name: BuildResourceName(MoleConfigName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				},
 			},
 		},
@@ -140,7 +138,7 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 
 	//Volume to mount emptyDir to share logs
 	volumes = append(volumes, v13.Volume{
-		Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+		Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 		VolumeSource: v13.VolumeSource{
 			EmptyDir: &v13.EmptyDirVolumeSource{},
 		},
@@ -150,11 +148,12 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 
 func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	var mounts []v13.VolumeMount
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
-	mounts = append(mounts, v13.VolumeMount{
-		Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
-		MountPath: cr.Spec.Product.Service[name].Instance.ConfigPath,
-	})
+	for _, configPath := range cr.Spec.Product.Service[name].Instance.ConfigPaths {
+		mounts = append(mounts, v13.VolumeMount{
+			Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+			MountPath: configPath,
+		})
+	}
 
 	return mounts
 }
@@ -213,7 +212,6 @@ func getContainerPorts(cr *molev1.Mole, name string) []v13.ContainerPort {
 }
 
 func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name string) v1.DeploymentSpec {
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return v1.DeploymentSpec{
 		Replicas: getReplicas(cr, name),
 		Selector: &v12.LabelSelector{
@@ -223,7 +221,7 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 		},
 		Template: v13.PodTemplateSpec{
 			ObjectMeta: v12.ObjectMeta{
-				Name:        BuildResourceName(MolePodName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+				Name:        BuildResourceName(MolePodName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				Labels:      getPodLabels(cr, name),
 				Annotations: getPodAnnotations(cr, annotations, name),
 			},
@@ -247,10 +245,9 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 }
 
 func MoleDeployment(cr *molev1.Mole, name string) *v1.Deployment {
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return &v1.Deployment{
 		ObjectMeta: v12.ObjectMeta{
-			Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+			Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			Labels:    getDeploymentLabels(cr, name),
 			Namespace: cr.Namespace,
 		},
@@ -266,9 +263,8 @@ func MoleDeploymentReconciled(cr *molev1.Mole, currentState *v1.Deployment, name
 }
 
 func MoleDeploymentSelector(cr *molev1.Mole, name string) client.ObjectKey {
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
-		Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+		Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 	}
 }

@@ -7,7 +7,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
-	"strings"
 )
 
 func getIngressTLS(cr *molev1.Mole, name string) []v1beta1.IngressTLS {
@@ -44,11 +43,10 @@ func getIngressSpec(cr *molev1.Mole, name string) v1beta1.IngressSpec {
 
 func getIngressRulePaths(cr *molev1.Mole, name string) []v1beta1.HTTPIngressPath {
 	paths := make([]v1beta1.HTTPIngressPath, 0)
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	for _, port := range cr.Spec.Product.Service[name].Instance.Deployment.Ports {
 		paths = append(paths, v1beta1.HTTPIngressPath{
 			Backend: v1beta1.IngressBackend{
-				ServiceName: BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+				ServiceName: BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				ServicePort: intstr.FromInt(port),
 			},
 		})
@@ -57,10 +55,9 @@ func getIngressRulePaths(cr *molev1.Mole, name string) []v1beta1.HTTPIngressPath
 }
 
 func MoleIngress(cr *molev1.Mole, name string) *v1beta1.Ingress {
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return &v1beta1.Ingress{
 		ObjectMeta: v1.ObjectMeta{
-			Name:        BuildResourceName(MoleIngressName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+			Name:        BuildResourceName(MoleIngressName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			Namespace:   cr.Namespace,
 			Labels:      GetIngressLabels(cr, name),
 			Annotations: GetIngressAnnotations(cr, nil, name),
@@ -78,10 +75,9 @@ func MoleIngressReconciled(cr *molev1.Mole, currentState *v1beta1.Ingress, name 
 }
 
 func MoleIngressSelector(cr *molev1.Mole, name string) client.ObjectKey {
-	productVersion := strings.ReplaceAll(cr.Spec.Product.ProductVersion, ".", "")
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
-		Name:      BuildResourceName(MoleIngressName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, productVersion, name),
+		Name:      BuildResourceName(MoleIngressName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 	}
 }
 
