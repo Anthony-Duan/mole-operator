@@ -165,7 +165,7 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 	cr.Status.Phase = molev1.PhaseFailing
 	cr.Status.Message = issue.Error()
 
-	err := r.client.Status().Update(r.context, cr)
+	err := r.client.Update(r.context, cr)
 	if err != nil {
 		// Ignore conflicts, resource might just be outdated.
 		if errors.IsConflict(err) {
@@ -180,10 +180,10 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 func (r *ReconcileMole) manageSuccess(cr *molev1.Mole) (reconcile.Result, error) {
 	cr.Status.Phase = molev1.PhaseReconciling
 	cr.Status.Message = PRODUCT_DEPLOY_SUCCESS
-	//err := r.client.Status().Update(r.context, cr)
-	//if err != nil {
-	//	return reconcile.Result{}, err
-	//}
+	err := r.client.Update(r.context, cr)
+	if err != nil {
+		return reconcile.Result{}, err
+	}
 	return reconcile.Result{}, nil
 }
 
