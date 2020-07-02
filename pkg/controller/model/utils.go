@@ -17,25 +17,19 @@ func MergeAnnotations(requested map[string]string, existing map[string]string) m
 }
 
 func BuildResourceName(resourceType, parentProductName, productName, serviceName string) string {
-	serviceName = strings.Replace(serviceName, "_", "", -1)
-	productName = strings.Replace(productName, "_", "", -1)
-	parentProductName = strings.Replace(parentProductName, "_", "", -1)
-	return fmt.Sprintf("%v-%v-%v-%v", resourceType, parentProductName, productName, serviceName)
+	return fmt.Sprintf("%v-%v-%v-%v", resourceType, ConvertDNSRuleName(parentProductName), ConvertDNSRuleName(productName), ConvertDNSRuleName(serviceName))
 }
 
 func BuildResourceLabel(parentProductName, productName, serviceName string) string {
-	serviceName = strings.Replace(serviceName, "_", "", -1)
-	productName = strings.Replace(productName, "_", "", -1)
-	parentProductName = strings.Replace(parentProductName, "_", "", -1)
-	return fmt.Sprintf("%v-%v-%v", parentProductName, productName, serviceName)
+	return fmt.Sprintf("%v-%v-%v", ConvertDNSRuleName(parentProductName), ConvertDNSRuleName(productName), ConvertDNSRuleName(serviceName))
 }
 
-func BuildConfigMapName(parentProductName, productName, serviceName, configName string) string {
-	serviceName = strings.Replace(serviceName, "_", "", -1)
-	productName = strings.Replace(productName, "_", "", -1)
-	parentProductName = strings.Replace(parentProductName, "_", "", -1)
-	return fmt.Sprintf("%v-%v-%v-%v", parentProductName, productName, serviceName, configName)
-}
 func BuildPortName(serviceName string, index int) string {
-	return fmt.Sprintf("%v-%v", serviceName, index)
+	return fmt.Sprintf("%v-%v", ConvertDNSRuleName(serviceName), index)
+}
+
+func ConvertDNSRuleName(s string) string {
+	s = strings.Replace(s, "_", "", -1)
+	s = strings.ToLower(s)
+	return s
 }

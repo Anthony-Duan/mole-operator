@@ -110,7 +110,6 @@ type ReconcileMole struct {
 func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
 	reqLogger.Info("Reconciling Mole")
-
 	// Fetch the Mole instance
 	instance := &molev1.Mole{}
 	err := r.client.Get(r.context, request.NamespacedName, instance)
@@ -156,8 +155,8 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 		if err != nil {
 			return r.manageError(cr, err)
 		}
-	}
 
+	}
 	return r.manageSuccess(cr)
 }
 
@@ -181,10 +180,10 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 func (r *ReconcileMole) manageSuccess(cr *molev1.Mole) (reconcile.Result, error) {
 	cr.Status.Phase = molev1.PhaseReconciling
 	cr.Status.Message = PRODUCT_DEPLOY_SUCCESS
-	err := r.client.Status().Update(r.context, cr)
-	if err != nil {
-		return r.manageError(cr, err)
-	}
+	//err := r.client.Status().Update(r.context, cr)
+	//if err != nil {
+	//	return reconcile.Result{}, err
+	//}
 	return reconcile.Result{}, nil
 }
 

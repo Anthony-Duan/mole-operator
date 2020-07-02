@@ -137,10 +137,14 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 	})
 
 	//Volume to mount emptyDir to share logs
+	hostPathType := v13.HostPathDirectoryOrCreate
 	volumes = append(volumes, v13.Volume{
 		Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 		VolumeSource: v13.VolumeSource{
-			EmptyDir: &v13.EmptyDirVolumeSource{},
+			HostPath: &v13.HostPathVolumeSource{
+				Path: LogHostPath,
+				Type: &hostPathType,
+			},
 		},
 	})
 	return volumes
@@ -150,10 +154,14 @@ func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	var mounts []v13.VolumeMount
 	for _, configPath := range cr.Spec.Product.Service[name].Instance.ConfigPaths {
 		mounts = append(mounts, v13.VolumeMount{
-			Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+			Name:      BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			MountPath: configPath,
 		})
 	}
+	mounts = append(mounts, v13.VolumeMount{
+		Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+		MountPath: "/log/data",
+	})
 
 	return mounts
 }

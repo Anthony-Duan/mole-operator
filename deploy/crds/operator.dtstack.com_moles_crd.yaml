@@ -67,7 +67,9 @@ spec:
                             cmd:
                               type: string
                             config_path:
-                              type: string
+                              items:
+                                type: string
+                              type: array
                             data_dir:
                               items:
                                 type: string
