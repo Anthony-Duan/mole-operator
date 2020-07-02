@@ -49,6 +49,7 @@ type SchemaConfig struct {
 	ProductName        string                   `json:"product_name,omitempty"`
 	ProductNameDisplay string                   `json:"product_name_display,omitempty"`
 	ProductVersion     string                   `json:"product_version,omitempty"`
+	ImagePullSecret    string                   `json:"imagePullSecret,omitempty"`
 	Service            map[string]ServiceConfig `json:"service"`
 }
 

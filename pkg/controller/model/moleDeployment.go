@@ -234,14 +234,15 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 				Annotations: getPodAnnotations(cr, annotations, name),
 			},
 			Spec: v13.PodSpec{
-				NodeSelector:    getNodeSelectors(cr, name),
-				Tolerations:     getTolerations(cr, name),
-				Affinity:        getAffinities(cr, name),
-				SecurityContext: getSecurityContext(cr, name),
-				Volumes:         getVolumes(cr, name),
-				Containers:      getContainers(cr, name),
-				//RestartPolicy:   v13.RestartPolicyAlways,
+				NodeSelector:     getNodeSelectors(cr, name),
+				Tolerations:      getTolerations(cr, name),
+				Affinity:         getAffinities(cr, name),
+				SecurityContext:  getSecurityContext(cr, name),
+				Volumes:          getVolumes(cr, name),
+				Containers:       getContainers(cr, name),
+				ImagePullSecrets: getImagePullSecrets(cr),
 				//ServiceAccountName: MoleServiceAccountName,
+				//RestartPolicy:   v13.RestartPolicyAlways,
 				//TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
 			},
 		},
@@ -274,5 +275,11 @@ func MoleDeploymentSelector(cr *molev1.Mole, name string) client.ObjectKey {
 	return client.ObjectKey{
 		Namespace: cr.Namespace,
 		Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+	}
+}
+
+func getImagePullSecrets(cr *molev1.Mole) []v13.LocalObjectReference {
+	return []v13.LocalObjectReference{
+		{Name: cr.Spec.Product.ImagePullSecret},
 	}
 }

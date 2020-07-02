@@ -182,7 +182,7 @@ func (r *ReconcileMole) manageSuccess(cr *molev1.Mole) (reconcile.Result, error)
 	cr.Status.Message = PRODUCT_DEPLOY_SUCCESS
 	err := r.client.Update(r.context, cr)
 	if err != nil {
-		return reconcile.Result{}, err
+		return r.manageError(cr, err)
 	}
 	return reconcile.Result{}, nil
 }

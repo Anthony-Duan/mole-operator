@@ -35,6 +35,8 @@ spec:
                     type: integer
                   deploy_uuid:
                     type: string
+                  imagePullSecret:
+                    type: string
                   parent_product_name:
                     type: string
                   pid:
