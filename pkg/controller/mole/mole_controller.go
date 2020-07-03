@@ -80,6 +80,9 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err = watchSecondaryResource(c, &v1.ServiceAccount{}); err != nil {
 		return err
 	}
+	//if err = watchSecondaryResource(c, &v1.Pod{}); err != nil {
+	//	return err
+	//}
 
 	return nil
 }
@@ -87,6 +90,13 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 func watchSecondaryResource(c controller.Controller, resource runtime.Object) error {
 	return c.Watch(&source.Kind{Type: resource}, &handler.EnqueueRequestForOwner{
 		IsController: true,
+		OwnerType:    &molev1.Mole{},
+	})
+}
+
+func watchThirdResource(c controller.Controller, resource runtime.Object) error {
+	return c.Watch(&source.Kind{Type: resource}, &handler.EnqueueRequestForOwner{
+		IsController: false,
 		OwnerType:    &molev1.Mole{},
 	})
 }
@@ -136,6 +146,9 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 		return reconcile.Result{}, err
 	}
 
+	readyCount := 0
+	specCount := len(deploySeq)
+
 	for _, serviceName := range deploySeq {
 		//read current state
 		currentState := common.NewServiceState(serviceName)
@@ -155,14 +168,20 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 		if err != nil {
 			return r.manageError(cr, err)
 		}
-
+		// check if all pod ready
+		if currentState.MoleDeployment != nil && currentState.MoleDeployment.Status.ReadyReplicas == currentState.MoleDeployment.Status.Replicas {
+			readyCount++
+		}
 	}
-	return r.manageSuccess(cr)
+	if readyCount == specCount {
+		return r.manageSuccess(cr, molev1.MOLEF_RUNNING)
+	}
+	return r.manageSuccess(cr, molev1.MOLE_PENDING)
 }
 
 func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Result, error) {
 	//r.recorder.Event(cr, "Warning", "ProcessingError", issue.Error())
-	cr.Status.Phase = molev1.PhaseFailing
+	cr.Status.Phase = molev1.MOLE_FAILED
 	cr.Status.Message = issue.Error()
 
 	err := r.client.Update(r.context, cr)
@@ -177,9 +196,8 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 	return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 }
 
-func (r *ReconcileMole) manageSuccess(cr *molev1.Mole) (reconcile.Result, error) {
-	cr.Status.Phase = molev1.PhaseReconciling
-	cr.Status.Message = PRODUCT_DEPLOY_SUCCESS
+func (r *ReconcileMole) manageSuccess(cr *molev1.Mole, phase molev1.MolePhase) (reconcile.Result, error) {
+	cr.Status.Phase = phase
 	err := r.client.Update(r.context, cr)
 	if err != nil {
 		return r.manageError(cr, err)

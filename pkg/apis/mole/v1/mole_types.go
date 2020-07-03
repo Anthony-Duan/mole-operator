@@ -5,12 +5,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type StatusPhase string
+type MolePhase string
 
 var (
-	NoPhase          StatusPhase
-	PhaseReconciling StatusPhase = "reconciling"
-	PhaseFailing     StatusPhase = "failing"
+	MOLEF_RUNNING MolePhase = "Running"
+	MOLE_PENDING  MolePhase = "Pending"
+	MOLE_FAILED   MolePhase = "Failed"
 )
 
 type ConfigMap map[string]string
@@ -95,8 +95,8 @@ type MoleSpec struct {
 }
 
 type MoleStatus struct {
-	Phase   StatusPhase `json:"phase"`
-	Message string      `json:"message"`
+	Phase   MolePhase `json:"phase"`
+	Message string    `json:"message"`
 }
 
 type Mole struct {

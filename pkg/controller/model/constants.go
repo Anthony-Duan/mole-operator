@@ -11,4 +11,5 @@ const (
 	MoleLogsVolumeName     = "log"
 	LogHostPath            = "/dtstack/data"
 	MoleServiceAccountName = "dtstack"
+	MoleCom                = "dtstack.com"
 )

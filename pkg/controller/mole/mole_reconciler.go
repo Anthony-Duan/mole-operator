@@ -66,7 +66,6 @@ func (i *MoleReconciler) getMoleDeploymentDesiredState(state *common.ServiceStat
 			Msg: "create Mole deployment",
 		}
 	}
-
 	return common.GenericUpdateAction{
 		Ref: model.MoleDeploymentReconciled(cr, state.MoleDeployment, i.Name),
 		Msg: "update Mole deployment",

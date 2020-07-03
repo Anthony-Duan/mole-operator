@@ -21,6 +21,7 @@ func getServiceLabels(cr *molev1.Mole, name string) map[string]string {
 	labels["service_name"] = name
 	labels["service_version"] = cr.Spec.Product.Service[name].Version
 	labels["group"] = cr.Spec.Product.Service[name].Group
+	labels["com"] = MoleCom
 
 	return labels
 }

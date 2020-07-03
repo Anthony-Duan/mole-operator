@@ -169,6 +169,7 @@ func (i GenericCreateAction) Run(runner ActionRunner) (string, error) {
 }
 
 func (i GenericUpdateAction) Run(runner ActionRunner) (string, error) {
+
 	return i.Msg, runner.update(i.Ref)
 }
 
