@@ -5,6 +5,7 @@ import (
 	"context"
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
 	"dtstack.com/dtstack/mole-operator/pkg/controller/common"
+	"dtstack.com/dtstack/mole-operator/pkg/controller/model"
 	"fmt"
 	v12 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -69,18 +70,11 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 		return err
 	}
 
-	if err = watchSecondaryResource(c, &v1.ConfigMap{}); err != nil {
-		return err
-	}
-
 	if err = watchSecondaryResource(c, &v1.Service{}); err != nil {
 		return err
 	}
 
-	if err = watchSecondaryResource(c, &v1.ServiceAccount{}); err != nil {
-		return err
-	}
-	//if err = watchSecondaryResource(c, &v1.Pod{}); err != nil {
+	//if err = watchSecondaryResource(c, &v1.Event{}); err != nil {
 	//	return err
 	//}
 
@@ -123,6 +117,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 	// Fetch the Mole instance
 	instance := &molev1.Mole{}
 	err := r.client.Get(r.context, request.NamespacedName, instance)
+
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// Request object not found, could have been deleted after reconcile request.
@@ -134,8 +129,12 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 		return reconcile.Result{}, err
 	}
 
-	cr := instance.DeepCopy()
+	//err = r.client.Get(r.context, request.NamespacedName, a)
+	//if err != nil {
+	//	return reconcile.Result{}, err
+	//}
 
+	cr := instance.DeepCopy()
 	depends := make(map[string][]string)
 	for serviceName := range cr.Spec.Product.Service {
 		depends[serviceName] = cr.Spec.Product.Service[serviceName].DependsOn
@@ -181,6 +180,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 
 func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Result, error) {
 	//r.recorder.Event(cr, "Warning", "ProcessingError", issue.Error())
+	cr.Labels = model.GetMoleLabels(cr)
 	cr.Status.Phase = molev1.MOLE_FAILED
 	cr.Status.Message = issue.Error()
 
@@ -198,6 +198,8 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 
 func (r *ReconcileMole) manageSuccess(cr *molev1.Mole, phase molev1.MolePhase) (reconcile.Result, error) {
 	cr.Status.Phase = phase
+	cr.Labels = model.GetMoleLabels(cr)
+
 	err := r.client.Update(r.context, cr)
 	if err != nil {
 		return r.manageError(cr, err)
