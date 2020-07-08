@@ -18,13 +18,13 @@ spec:
         - name: dtstack
       containers:
         - name: mole-operator
-          image: registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.0
+          image: registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.1
           imagePullPolicy: Always
           command:
             - mole-operator
           env:
             - name: WATCH_NAMESPACE
-              value: "dtstack-system"
+              value: "dtstack-system" # "" means watch all namespace
             - name: POD_NAME
               valueFrom:
                 fieldRef:

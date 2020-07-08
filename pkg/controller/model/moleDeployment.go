@@ -6,6 +6,7 @@ import (
 	v13 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"path/filepath"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 )
@@ -138,13 +139,13 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 		},
 	})
 
-	//Volume to mount emptyDir to share logs
+	//Volume to mount hostPath to share logs
 	hostPathType := v13.HostPathDirectoryOrCreate
 	volumes = append(volumes, v13.Volume{
 		Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 		VolumeSource: v13.VolumeSource{
 			HostPath: &v13.HostPathVolumeSource{
-				Path: LogHostPath,
+				Path: LogPath + "/" + cr.Spec.Product.ProductName + "/" + name,
 				Type: &hostPathType,
 			},
 		},
@@ -155,46 +156,48 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	var mounts []v13.VolumeMount
 	for _, configPath := range cr.Spec.Product.Service[name].Instance.ConfigPaths {
+		_, fileName := filepath.Split(configPath)
 		mounts = append(mounts, v13.VolumeMount{
 			Name:      BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+			SubPath:   fileName,
 			MountPath: configPath,
 		})
 	}
 	mounts = append(mounts, v13.VolumeMount{
 		Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-		MountPath: "/log/data",
+		MountPath: "/mount",
 	})
 
 	return mounts
 }
 
-//func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *v13.Probe {
-//	return &v13.Probe{
-//		Handler: v13.Handler{
-//			HTTPGet: &v13.HTTPGetAction{
-//				Path: MoleHealthEndpoint,
-//				Port: intstr.FromInt(GetMolePort(cr, name)),
-//			},
-//		},
-//		InitialDelaySeconds: delay,
-//		TimeoutSeconds:      timeout,
-//		FailureThreshold:    failure,
-//	}
-//}
+func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *v13.Probe {
+	return &v13.Probe{
+		Handler: v13.Handler{
+			TCPSocket: &v13.TCPSocketAction{
+				Port: intstr.FromInt(8889),
+			},
+		},
+		InitialDelaySeconds: delay,
+		TimeoutSeconds:      timeout,
+		FailureThreshold:    failure,
+	}
+}
 
 func getContainers(cr *molev1.Mole, name string) []v13.Container {
 	var containers []v13.Container
 	containers = append(containers, v13.Container{
-		Name:         name,
-		Image:        cr.Spec.Product.Service[name].Instance.Deployment.Image,
-		WorkingDir:   "",
-		Ports:        getContainerPorts(cr, name),
-		VolumeMounts: getVolumeMounts(cr, name),
-		//LivenessProbe:            getProbe(cr, 60, 30, 10, name),
-		//ReadinessProbe:           getProbe(cr, 5, 3, 1, name),
+		Name:           name,
+		Image:          cr.Spec.Product.Service[name].Instance.Deployment.Image,
+		WorkingDir:     "",
+		Ports:          getContainerPorts(cr, name),
+		VolumeMounts:   getVolumeMounts(cr, name),
+		LivenessProbe:  getProbe(cr, 0, 10, 10, name),
+		ReadinessProbe: getProbe(cr, 0, 3, 1, name),
 		//TerminationMessagePath:   "/dev/termination-log",
 		//TerminationMessagePolicy: "File",
 		ImagePullPolicy: "IfNotPresent",
+		Lifecycle:       getPodLifeCycle(name),
 	})
 	for _, container := range cr.Spec.Product.Service[name].Instance.Deployment.Containers {
 		containers = append(containers, v13.Container{
@@ -283,5 +286,30 @@ func MoleDeploymentSelector(cr *molev1.Mole, name string) client.ObjectKey {
 func getImagePullSecrets(cr *molev1.Mole) []v13.LocalObjectReference {
 	return []v13.LocalObjectReference{
 		{Name: cr.Spec.Product.ImagePullSecret},
+	}
+}
+
+func getPodLifeCycle(name string) *v13.Lifecycle {
+	return &v13.Lifecycle{
+		PostStart: &v13.Handler{
+			Exec: &v13.ExecAction{
+				Command: []string{
+					"/bin/sh",
+					"-c",
+					`>-
+					mkdir -p /mount/${HOSTNAME} && ln -s /mount/${HOSTNAME} /opt/dtstack/DTEasyagent/` + name + `/logs`,
+
+					//"mkdir",
+					//"-p",
+					//"/mount/${HOSTNAME}",
+					//"&&",
+					//"ln",
+					//"-s",
+					//"/opt/dtstack/" + name + "/logs",
+					//"/mount/${HOSTNAME}",
+					//`"`,
+				},
+			},
+		},
 	}
 }

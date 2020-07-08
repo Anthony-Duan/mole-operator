@@ -9,7 +9,7 @@ const (
 	MoleHealthEndpoint     = "/api/health"
 	MoleConfigVolumeName   = "volume"
 	MoleLogsVolumeName     = "log"
-	LogHostPath            = "/dtstack/data"
+	LogPath                = "/tmp/dtstack/"
 	MoleServiceAccountName = "dtstack"
 	MoleCom                = "dtstack.com"
 )

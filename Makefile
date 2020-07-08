@@ -19,7 +19,7 @@ sdk-gen-crds:
     # operator-sdk generate crds --crd-version v1beta1
 	operator-sdk generate crds
 sdk-run-local:
-	operator-sdk run local --watch-namespace=dtstack-system
+	operator-sdk run local --watch-namespace=""
 
 sdk-build:
     operator-sdk build registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.0
