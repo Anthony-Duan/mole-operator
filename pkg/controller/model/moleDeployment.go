@@ -165,7 +165,7 @@ func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	}
 	mounts = append(mounts, v13.VolumeMount{
 		Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-		MountPath: "/mount",
+		MountPath: MoleMountPath,
 	})
 
 	return mounts
@@ -197,7 +197,7 @@ func getContainers(cr *molev1.Mole, name string) []v13.Container {
 		//TerminationMessagePath:   "/dev/termination-log",
 		//TerminationMessagePolicy: "File",
 		ImagePullPolicy: "IfNotPresent",
-		Lifecycle:       getPodLifeCycle(name),
+		Lifecycle:       getPodLifeCycle(),
 	})
 	for _, container := range cr.Spec.Product.Service[name].Instance.Deployment.Containers {
 		containers = append(containers, v13.Container{
@@ -289,25 +289,14 @@ func getImagePullSecrets(cr *molev1.Mole) []v13.LocalObjectReference {
 	}
 }
 
-func getPodLifeCycle(name string) *v13.Lifecycle {
+func getPodLifeCycle() *v13.Lifecycle {
 	return &v13.Lifecycle{
 		PostStart: &v13.Handler{
 			Exec: &v13.ExecAction{
 				Command: []string{
 					"/bin/sh",
 					"-c",
-					`>-
-					mkdir -p /mount/${HOSTNAME} && ln -s /mount/${HOSTNAME} /opt/dtstack/DTEasyagent/` + name + `/logs`,
-
-					//"mkdir",
-					//"-p",
-					//"/mount/${HOSTNAME}",
-					//"&&",
-					//"ln",
-					//"-s",
-					//"/opt/dtstack/" + name + "/logs",
-					//"/mount/${HOSTNAME}",
-					//`"`,
+					"mkdir -p /mount/${HOSTNAME}/logs && ln -s /mount/${HOSTNAME}/logs logs",
 				},
 			},
 		},
