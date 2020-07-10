@@ -6,9 +6,9 @@ import (
 	v13 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"path/filepath"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
+	"strings"
 )
 
 func getAffinities(cr *molev1.Mole, name string) *v13.Affinity {
@@ -156,10 +156,10 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	var mounts []v13.VolumeMount
 	for _, configPath := range cr.Spec.Product.Service[name].Instance.ConfigPaths {
-		_, fileName := filepath.Split(configPath)
+		subPath := strings.Replace(configPath, "/", "_", -1)
 		mounts = append(mounts, v13.VolumeMount{
 			Name:      BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-			SubPath:   fileName,
+			SubPath:   subPath,
 			MountPath: configPath,
 		})
 	}
