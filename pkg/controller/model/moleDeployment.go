@@ -2,6 +2,7 @@ package model
 
 import (
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	"fmt"
 	v1 "k8s.io/api/apps/v1"
 	v13 "k8s.io/api/core/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -40,10 +41,10 @@ func getReplicas(cr *molev1.Mole, name string) *int32 {
 }
 
 func getRollingUpdateStrategy() *v1.RollingUpdateDeployment {
-	var maxUnaval intstr.IntOrString = intstr.FromInt(25)
-	var maxSurge intstr.IntOrString = intstr.FromInt(25)
+	var maxUnavailable = intstr.FromInt(0)
+	var maxSurge = intstr.FromString("25%")
 	return &v1.RollingUpdateDeployment{
-		MaxUnavailable: &maxUnaval,
+		MaxUnavailable: &maxUnavailable,
 		MaxSurge:       &maxSurge,
 	}
 }
@@ -160,7 +161,7 @@ func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 		mounts = append(mounts, v13.VolumeMount{
 			Name:      BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			SubPath:   subPath,
-			MountPath: configPath,
+			MountPath: fmt.Sprintf("opt/dtstack/%v/%v/%v", cr.Spec.Product.ProductName, name, configPath),
 		})
 	}
 	mounts = append(mounts, v13.VolumeMount{
@@ -171,29 +172,29 @@ func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	return mounts
 }
 
-func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *v13.Probe {
-	return &v13.Probe{
-		Handler: v13.Handler{
-			TCPSocket: &v13.TCPSocketAction{
-				Port: intstr.FromInt(8889),
-			},
-		},
-		InitialDelaySeconds: delay,
-		TimeoutSeconds:      timeout,
-		FailureThreshold:    failure,
-	}
-}
+//func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *v13.Probe {
+//	return &v13.Probe{
+//		Handler: v13.Handler{
+//			TCPSocket: &v13.TCPSocketAction{
+//				Port: intstr.FromInt(),
+//			},
+//		},
+//		InitialDelaySeconds: delay,
+//		TimeoutSeconds:      timeout,
+//		FailureThreshold:    failure,
+//	}
+//}
 
 func getContainers(cr *molev1.Mole, name string) []v13.Container {
 	var containers []v13.Container
 	containers = append(containers, v13.Container{
-		Name:           name,
-		Image:          cr.Spec.Product.Service[name].Instance.Deployment.Image,
-		WorkingDir:     "",
-		Ports:          getContainerPorts(cr, name),
-		VolumeMounts:   getVolumeMounts(cr, name),
-		LivenessProbe:  getProbe(cr, 0, 10, 10, name),
-		ReadinessProbe: getProbe(cr, 0, 3, 1, name),
+		Name:         ConvertDNSRuleName(name),
+		Image:        cr.Spec.Product.Service[name].Instance.Deployment.Image,
+		WorkingDir:   "",
+		Ports:        getContainerPorts(cr, name),
+		VolumeMounts: getVolumeMounts(cr, name),
+		//LivenessProbe:  getProbe(cr, 0, 10, 10, name),
+		//ReadinessProbe: getProbe(cr, 0, 3, 1, name),
 		//TerminationMessagePath:   "/dev/termination-log",
 		//TerminationMessagePolicy: "File",
 		ImagePullPolicy: "IfNotPresent",

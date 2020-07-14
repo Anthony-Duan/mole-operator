@@ -117,7 +117,7 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 	// Fetch the Mole instance
 	instance := &molev1.Mole{}
 	err := r.client.Get(r.context, request.NamespacedName, instance)
-
+	fmt.Println("---------------------%v", instance.Spec.Product.DeployUUid)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// Request object not found, could have been deleted after reconcile request.

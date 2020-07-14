@@ -45,6 +45,7 @@ func getIngressRulePaths(cr *molev1.Mole, name string) []v1beta1.HTTPIngressPath
 	paths := make([]v1beta1.HTTPIngressPath, 0)
 	for _, port := range cr.Spec.Product.Service[name].Instance.Deployment.Ports {
 		paths = append(paths, v1beta1.HTTPIngressPath{
+			//Path: fmt.Sprintf("/%v/%v/", cr.Namespace, strings.ToLower(name)),
 			Backend: v1beta1.IngressBackend{
 				ServiceName: BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				ServicePort: intstr.FromInt(port),
@@ -99,10 +100,15 @@ func GetIngressLabels(cr *molev1.Mole, name string) map[string]string {
 }
 
 func GetIngressAnnotations(cr *molev1.Mole, existing map[string]string, name string) map[string]string {
-	if cr.Spec.Product.Service[name].Instance.Ingress == nil {
-		return existing
+	return map[string]string{
+		"kubernetes.io/ingress.class":                "nginx",
+		"nginx.ingress.kubernetes.io/ssl-redirect":   "false",
+		"nginx.ingress.kubernetes.io/rewrite-target": "/",
 	}
-	return MergeAnnotations(cr.Spec.Product.Service[name].Instance.Ingress.Annotations, existing)
+	//if cr.Spec.Product.Service[name].Instance.Ingress == nil {
+	//	return existing
+	//}
+	//return MergeAnnotations(cr.Spec.Product.Service[name].Instance.Ingress.Annotations, existing)
 }
 
 func GetHost(cr *molev1.Mole, name string) string {
