@@ -109,6 +109,8 @@ type ReconcileMole struct {
 	//recorder record.EventRecorder
 }
 
+var Time = 0
+
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
 func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, error) {
@@ -117,7 +119,6 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 	// Fetch the Mole instance
 	instance := &molev1.Mole{}
 	err := r.client.Get(r.context, request.NamespacedName, instance)
-	fmt.Println("---------------------%v", instance.Spec.Product.DeployUUid)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// Request object not found, could have been deleted after reconcile request.
@@ -168,8 +169,10 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 			return r.manageError(cr, err)
 		}
 		// check if all pod ready
-		if currentState.MoleDeployment != nil && currentState.MoleDeployment.Status.ReadyReplicas == currentState.MoleDeployment.Status.Replicas {
-			readyCount++
+		if currentState.MoleDeployment != nil && currentState.MoleDeployment.Status.AvailableReplicas == *currentState.MoleDeployment.Spec.Replicas {
+			if currentState.MoleDeployment.Status.Replicas == *currentState.MoleDeployment.Spec.Replicas {
+				readyCount++
+			}
 		}
 	}
 	if readyCount == specCount {
@@ -199,11 +202,12 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 func (r *ReconcileMole) manageSuccess(cr *molev1.Mole, phase molev1.MolePhase) (reconcile.Result, error) {
 	cr.Status.Phase = phase
 	cr.Labels = model.GetMoleLabels(cr)
-
 	err := r.client.Update(r.context, cr)
 	if err != nil {
 		return r.manageError(cr, err)
 	}
+	Time++
+	fmt.Println(Time, phase)
 	return reconcile.Result{}, nil
 }
 

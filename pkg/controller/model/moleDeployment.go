@@ -227,7 +227,9 @@ func getContainerPorts(cr *molev1.Mole, name string) []v13.ContainerPort {
 
 func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name string) v1.DeploymentSpec {
 	return v1.DeploymentSpec{
-		Replicas: getReplicas(cr, name),
+		Replicas:        getReplicas(cr, name),
+		MinReadySeconds: 10,
+
 		Selector: &v12.LabelSelector{
 			MatchLabels: map[string]string{
 				"app": BuildResourceLabel(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
@@ -247,6 +249,7 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 				Volumes:          getVolumes(cr, name),
 				Containers:       getContainers(cr, name),
 				ImagePullSecrets: getImagePullSecrets(cr),
+
 				//ServiceAccountName: MoleServiceAccountName,
 				//RestartPolicy:   v13.RestartPolicyAlways,
 				//TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
