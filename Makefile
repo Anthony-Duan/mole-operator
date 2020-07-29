@@ -20,10 +20,10 @@ deepcopy:
 	operator-sdk generate k8s
 
 image:
-	operator-sdk build registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.8
+	operator-sdk build registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.9
 
 push:
-	docker push registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.8
+	docker push registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.9
 
 build-cmd:
 	go build cmd/manager/main.go

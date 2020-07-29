@@ -14,6 +14,7 @@ spec:
   - name: v1
     schema:
       openAPIV3Schema:
+        description: Mole is the Schema for the moles API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -1251,3 +1252,5 @@ spec:
         type: object
     served: true
     storage: true
+    subresources:
+      status: {}

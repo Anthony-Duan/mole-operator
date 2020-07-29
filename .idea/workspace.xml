@@ -26,23 +26,12 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e2a1c40-815f-48fd-9098-079c356d5a00" name="Default Changelist" comment="">
+    <list default="true" id="4e2a1c40-815f-48fd-9098-079c356d5a00" name="Default Changelist" comment="mole add job">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/build/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/manager/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/manager/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/deploy/crds/operator.dtstack.com_moles_crd.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/crds/operator.dtstack.com_moles_crd.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/apis/mole/v1/mole_types.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/apis/mole/v1/mole_types.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/apis/mole/v1/zz_generated.deepcopy.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/apis/mole/v1/zz_generated.deepcopy.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/common/readiness_checks.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/common/readiness_checks.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/common/serviceActions.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/common/serviceActions.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/common/serviceState.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/common/serviceState.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/model/constants.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/constants.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/model/moleDeployment.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/moleDeployment.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/model/moleIngress.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/moleIngress.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/model/moleService.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/moleService.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/model/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/utils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/mole/mole_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/mole/mole_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/mole/mole_reconciler.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/mole/mole_reconciler.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,6 +154,10 @@
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="mole add job" />
+    <option name="LAST_COMMIT_MESSAGE" value="mole add job" />
+  </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
     <environment>
@@ -187,26 +180,26 @@
       <screen x="0" y="23" width="1440" height="833" />
     </state>
     <state width="351" height="206" key="Git.Branch.Popup/0.23.1440.833@0.23.1440.833" timestamp="1595831273206" />
-    <state width="1398" height="210" key="GridCell.Tab.0.bottom" timestamp="1596035659393">
+    <state width="1398" height="210" key="GridCell.Tab.0.bottom" timestamp="1596039256086">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
     <state width="1398" height="210" key="GridCell.Tab.0.bottom/0.23.1440.833/-1600.23.1600.877@0.23.1440.833" timestamp="1596028786782" />
-    <state width="1398" height="210" key="GridCell.Tab.0.bottom/0.23.1440.833@0.23.1440.833" timestamp="1596035659393" />
-    <state width="1398" height="210" key="GridCell.Tab.0.center" timestamp="1596035659391">
+    <state width="1398" height="210" key="GridCell.Tab.0.bottom/0.23.1440.833@0.23.1440.833" timestamp="1596039256086" />
+    <state width="1398" height="210" key="GridCell.Tab.0.center" timestamp="1596039256085">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
     <state width="1398" height="210" key="GridCell.Tab.0.center/0.23.1440.833/-1600.23.1600.877@0.23.1440.833" timestamp="1596028786781" />
-    <state width="1398" height="210" key="GridCell.Tab.0.center/0.23.1440.833@0.23.1440.833" timestamp="1596035659391" />
-    <state width="1398" height="210" key="GridCell.Tab.0.left" timestamp="1596035659390">
+    <state width="1398" height="210" key="GridCell.Tab.0.center/0.23.1440.833@0.23.1440.833" timestamp="1596039256085" />
+    <state width="1398" height="210" key="GridCell.Tab.0.left" timestamp="1596039256084">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
     <state width="1398" height="210" key="GridCell.Tab.0.left/0.23.1440.833/-1600.23.1600.877@0.23.1440.833" timestamp="1596028786780" />
-    <state width="1398" height="210" key="GridCell.Tab.0.left/0.23.1440.833@0.23.1440.833" timestamp="1596035659390" />
-    <state width="1398" height="210" key="GridCell.Tab.0.right" timestamp="1596035659392">
+    <state width="1398" height="210" key="GridCell.Tab.0.left/0.23.1440.833@0.23.1440.833" timestamp="1596039256084" />
+    <state width="1398" height="210" key="GridCell.Tab.0.right" timestamp="1596039256085">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
     <state width="1398" height="210" key="GridCell.Tab.0.right/0.23.1440.833/-1600.23.1600.877@0.23.1440.833" timestamp="1596028786782" />
-    <state width="1398" height="210" key="GridCell.Tab.0.right/0.23.1440.833@0.23.1440.833" timestamp="1596035659392" />
+    <state width="1398" height="210" key="GridCell.Tab.0.right/0.23.1440.833@0.23.1440.833" timestamp="1596039256085" />
     <state x="0" y="134" key="SettingsEditor" timestamp="1595492727170">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
@@ -215,10 +208,14 @@
       <screen x="0" y="23" width="1440" height="833" />
     </state>
     <state x="101" y="123" width="1240" height="633" key="ShowDiffWithBranchDialog/0.23.1440.833@0.23.1440.833" timestamp="1595830883969" />
-    <state x="512" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1595831486139">
+    <state x="321" y="179" key="Vcs.Push.Dialog.v2" timestamp="1596037935923">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
-    <state x="512" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.833@0.23.1440.833" timestamp="1595831486139" />
+    <state x="321" y="179" key="Vcs.Push.Dialog.v2/0.23.1440.833@0.23.1440.833" timestamp="1596037935923" />
+    <state x="512" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1596037944978">
+      <screen x="0" y="23" width="1440" height="833" />
+    </state>
+    <state x="512" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.833@0.23.1440.833" timestamp="1596037944978" />
     <state x="504" y="339" width="598" height="490" key="find.popup" timestamp="1596002810199">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
