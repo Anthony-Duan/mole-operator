@@ -24,12 +24,25 @@ func NewMoleReconciler(name string) *MoleReconciler {
 
 func (i *MoleReconciler) Reconcile(state *common.ServiceState, cr *molev1.Mole) common.DesiredServiceState {
 	desired := common.DesiredServiceState{}
+	if cr.Spec.Product.Service[i.Name].IsJob {
+		return desired.AddAction(i.jobReconclie(state, cr))
+	}
 	desired = desired.AddAction(i.getMoleDeploymentDesiredState(state, cr))
 	desired = desired.AddAction(i.getMoleServiceDesiredState(state, cr))
 	if cr.Spec.Product.Service[i.Name].IsDeployIngress {
 		desired = desired.AddAction(i.getMoleIngressDesiredState(state, cr))
 	}
 	return desired
+}
+
+func (i *MoleReconciler) jobReconclie(state *common.ServiceState, cr *molev1.Mole) common.ServiceAction {
+	if state.MoleJob == nil {
+		return common.GenericCreateAction{
+			Ref: model.MoleJob(cr, i.Name),
+			Msg: "create Mole Job",
+		}
+	}
+	return nil
 }
 
 func (i *MoleReconciler) getMoleServiceDesiredState(state *common.ServiceState, cr *molev1.Mole) common.ServiceAction {

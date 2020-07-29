@@ -3,25 +3,25 @@ package model
 import (
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
 	"fmt"
-	v1 "k8s.io/api/apps/v1"
-	v13 "k8s.io/api/core/v1"
-	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"strings"
 )
 
-func getAffinities(cr *molev1.Mole, name string) *v13.Affinity {
-	var affinity = v13.Affinity{}
+func getAffinities(cr *molev1.Mole, name string) *corev1.Affinity {
+	var affinity = corev1.Affinity{}
 	if cr.Spec.Product.Service[name].Instance.Deployment != nil && cr.Spec.Product.Service[name].Instance.Deployment.Affinity != nil {
 		affinity = *cr.Spec.Product.Service[name].Instance.Deployment.Affinity
 	}
 	return &affinity
 }
 
-func getSecurityContext(cr *molev1.Mole, name string) *v13.PodSecurityContext {
-	var securityContext = v13.PodSecurityContext{}
+func getSecurityContext(cr *molev1.Mole, name string) *corev1.PodSecurityContext {
+	var securityContext = corev1.PodSecurityContext{}
 	if cr.Spec.Product.Service[name].Instance.Deployment != nil && cr.Spec.Product.Service[name].Instance.Deployment.SecurityContext != nil {
 		securityContext = *cr.Spec.Product.Service[name].Instance.Deployment.SecurityContext
 	}
@@ -40,10 +40,10 @@ func getReplicas(cr *molev1.Mole, name string) *int32 {
 	}
 }
 
-func getRollingUpdateStrategy() *v1.RollingUpdateDeployment {
+func getRollingUpdateStrategy() *appsv1.RollingUpdateDeployment {
 	var maxUnavailable = intstr.FromInt(0)
 	var maxSurge = intstr.FromString("25%")
-	return &v1.RollingUpdateDeployment{
+	return &appsv1.RollingUpdateDeployment{
 		MaxUnavailable: &maxUnavailable,
 		MaxSurge:       &maxSurge,
 	}
@@ -115,8 +115,8 @@ func getTerminationGracePeriod(cr *molev1.Mole, name string) *int64 {
 
 }
 
-func getTolerations(cr *molev1.Mole, name string) []v13.Toleration {
-	tolerations := []v13.Toleration{}
+func getTolerations(cr *molev1.Mole, name string) []corev1.Toleration {
+	tolerations := []corev1.Toleration{}
 
 	if cr.Spec.Product.Service[name].Instance.Deployment != nil && cr.Spec.Product.Service[name].Instance.Deployment.Tolerations != nil {
 		for _, val := range cr.Spec.Product.Service[name].Instance.Deployment.Tolerations {
@@ -126,14 +126,14 @@ func getTolerations(cr *molev1.Mole, name string) []v13.Toleration {
 	return tolerations
 }
 
-func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
-	var volumes []v13.Volume
+func getVolumes(cr *molev1.Mole, name string) []corev1.Volume {
+	var volumes []corev1.Volume
 	// Volume to mount the config file from a configMap
-	volumes = append(volumes, v13.Volume{
+	volumes = append(volumes, corev1.Volume{
 		Name: BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-		VolumeSource: v13.VolumeSource{
-			ConfigMap: &v13.ConfigMapVolumeSource{
-				LocalObjectReference: v13.LocalObjectReference{
+		VolumeSource: corev1.VolumeSource{
+			ConfigMap: &corev1.ConfigMapVolumeSource{
+				LocalObjectReference: corev1.LocalObjectReference{
 					Name: BuildResourceName(MoleConfigName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				},
 			},
@@ -141,11 +141,11 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 	})
 
 	//Volume to mount hostPath to share logs
-	hostPathType := v13.HostPathDirectoryOrCreate
-	volumes = append(volumes, v13.Volume{
+	hostPathType := corev1.HostPathDirectoryOrCreate
+	volumes = append(volumes, corev1.Volume{
 		Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-		VolumeSource: v13.VolumeSource{
-			HostPath: &v13.HostPathVolumeSource{
+		VolumeSource: corev1.VolumeSource{
+			HostPath: &corev1.HostPathVolumeSource{
 				Path: LogPath + "/" + cr.Spec.Product.ProductName + "/" + name,
 				Type: &hostPathType,
 			},
@@ -154,17 +154,17 @@ func getVolumes(cr *molev1.Mole, name string) []v13.Volume {
 	return volumes
 }
 
-func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
-	var mounts []v13.VolumeMount
+func getVolumeMounts(cr *molev1.Mole, name string) []corev1.VolumeMount {
+	var mounts []corev1.VolumeMount
 	for _, configPath := range cr.Spec.Product.Service[name].Instance.ConfigPaths {
 		subPath := strings.Replace(configPath, "/", "_", -1)
-		mounts = append(mounts, v13.VolumeMount{
+		mounts = append(mounts, corev1.VolumeMount{
 			Name:      BuildResourceName(MoleConfigVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			SubPath:   subPath,
 			MountPath: fmt.Sprintf("opt/dtstack/%v/%v/%v", cr.Spec.Product.ProductName, name, configPath),
 		})
 	}
-	mounts = append(mounts, v13.VolumeMount{
+	mounts = append(mounts, corev1.VolumeMount{
 		Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 		MountPath: MoleMountPath,
 	})
@@ -172,10 +172,10 @@ func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 	return mounts
 }
 
-//func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *v13.Probe {
-//	return &v13.Probe{
-//		Handler: v13.Handler{
-//			TCPSocket: &v13.TCPSocketAction{
+//func getProbe(cr *molev1.Mole, delay, timeout, failure int32, name string) *corev1.Probe {
+//	return &corev1.Probe{
+//		Handler: corev1.Handler{
+//			TCPSocket: &corev1.TCPSocketAction{
 //				Port: intstr.FromInt(),
 //			},
 //		},
@@ -185,9 +185,9 @@ func getVolumeMounts(cr *molev1.Mole, name string) []v13.VolumeMount {
 //	}
 //}
 
-func getContainers(cr *molev1.Mole, name string) []v13.Container {
-	var containers []v13.Container
-	containers = append(containers, v13.Container{
+func getContainers(cr *molev1.Mole, name string) []corev1.Container {
+	var containers []corev1.Container
+	containers = append(containers, corev1.Container{
 		Name:         ConvertDNSRuleName(name),
 		Image:        cr.Spec.Product.Service[name].Instance.Deployment.Image,
 		WorkingDir:   "",
@@ -201,7 +201,7 @@ func getContainers(cr *molev1.Mole, name string) []v13.Container {
 		Lifecycle:       getPodLifeCycle(),
 	})
 	for _, container := range cr.Spec.Product.Service[name].Instance.Deployment.Containers {
-		containers = append(containers, v13.Container{
+		containers = append(containers, corev1.Container{
 			Name:            container.Name,
 			Image:           container.Image,
 			VolumeMounts:    getVolumeMounts(cr, name),
@@ -212,11 +212,11 @@ func getContainers(cr *molev1.Mole, name string) []v13.Container {
 	return containers
 }
 
-func getContainerPorts(cr *molev1.Mole, name string) []v13.ContainerPort {
+func getContainerPorts(cr *molev1.Mole, name string) []corev1.ContainerPort {
 	//portName := BuildPortName(name, MoleHttpPortName)
-	defaultPorts := make([]v13.ContainerPort, 0)
+	defaultPorts := make([]corev1.ContainerPort, 0)
 	for index, port := range cr.Spec.Product.Service[name].Instance.Deployment.Ports {
-		defaultPorts = append(defaultPorts, v13.ContainerPort{
+		defaultPorts = append(defaultPorts, corev1.ContainerPort{
 			Name:          BuildPortName(name, index),
 			Protocol:      "TCP",
 			ContainerPort: int32(port),
@@ -225,23 +225,23 @@ func getContainerPorts(cr *molev1.Mole, name string) []v13.ContainerPort {
 	return defaultPorts
 }
 
-func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name string) v1.DeploymentSpec {
-	return v1.DeploymentSpec{
+func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name string) appsv1.DeploymentSpec {
+	return appsv1.DeploymentSpec{
 		Replicas:        getReplicas(cr, name),
 		MinReadySeconds: 10,
 
-		Selector: &v12.LabelSelector{
+		Selector: &metav1.LabelSelector{
 			MatchLabels: map[string]string{
 				"app": BuildResourceLabel(cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			},
 		},
-		Template: v13.PodTemplateSpec{
-			ObjectMeta: v12.ObjectMeta{
+		Template: corev1.PodTemplateSpec{
+			ObjectMeta: metav1.ObjectMeta{
 				Name:        BuildResourceName(MolePodName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				Labels:      getPodLabels(cr, name),
 				Annotations: getPodAnnotations(cr, annotations, name),
 			},
-			Spec: v13.PodSpec{
+			Spec: corev1.PodSpec{
 				NodeSelector:     getNodeSelectors(cr, name),
 				Tolerations:      getTolerations(cr, name),
 				Affinity:         getAffinities(cr, name),
@@ -251,20 +251,20 @@ func getDeploymentSpec(cr *molev1.Mole, annotations map[string]string, name stri
 				ImagePullSecrets: getImagePullSecrets(cr),
 
 				//ServiceAccountName: MoleServiceAccountName,
-				//RestartPolicy:   v13.RestartPolicyAlways,
+				//RestartPolicy:   corev1.RestartPolicyAlways,
 				//TerminationGracePeriodSeconds: getTerminationGracePeriod(cr, name),
 			},
 		},
-		Strategy: v1.DeploymentStrategy{
+		Strategy: appsv1.DeploymentStrategy{
 			Type:          "RollingUpdate",
 			RollingUpdate: getRollingUpdateStrategy(),
 		},
 	}
 }
 
-func MoleDeployment(cr *molev1.Mole, name string) *v1.Deployment {
-	return &v1.Deployment{
-		ObjectMeta: v12.ObjectMeta{
+func MoleDeployment(cr *molev1.Mole, name string) *appsv1.Deployment {
+	return &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:      BuildResourceName(MoleDeploymentName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			Labels:    getDeploymentLabels(cr, name),
 			Namespace: cr.Namespace,
@@ -273,7 +273,7 @@ func MoleDeployment(cr *molev1.Mole, name string) *v1.Deployment {
 	}
 }
 
-func MoleDeploymentReconciled(cr *molev1.Mole, currentState *v1.Deployment, name string) *v1.Deployment {
+func MoleDeploymentReconciled(cr *molev1.Mole, currentState *appsv1.Deployment, name string) *appsv1.Deployment {
 	reconciled := currentState.DeepCopy()
 	reconciled.Labels = getDeploymentLabels(cr, name)
 	reconciled.Spec = getDeploymentSpec(cr, currentState.Spec.Template.Annotations, name)
@@ -287,16 +287,16 @@ func MoleDeploymentSelector(cr *molev1.Mole, name string) client.ObjectKey {
 	}
 }
 
-func getImagePullSecrets(cr *molev1.Mole) []v13.LocalObjectReference {
-	return []v13.LocalObjectReference{
+func getImagePullSecrets(cr *molev1.Mole) []corev1.LocalObjectReference {
+	return []corev1.LocalObjectReference{
 		{Name: cr.Spec.Product.ImagePullSecret},
 	}
 }
 
-func getPodLifeCycle() *v13.Lifecycle {
-	return &v13.Lifecycle{
-		PostStart: &v13.Handler{
-			Exec: &v13.ExecAction{
+func getPodLifeCycle() *corev1.Lifecycle {
+	return &corev1.Lifecycle{
+		PostStart: &corev1.Handler{
+			Exec: &corev1.ExecAction{
 				Command: []string{
 					"/bin/sh",
 					"-c",

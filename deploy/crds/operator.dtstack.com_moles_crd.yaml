@@ -1108,6 +1108,8 @@ spec:
                               items:
                                 type: string
                               type: array
+                            post_deploy:
+                              type: string
                             prometheus_port:
                               type: string
                             resources:
@@ -1223,6 +1225,8 @@ spec:
                               type: object
                           type: object
                         is_deploy_ingress:
+                          type: boolean
+                        is_job:
                           type: boolean
                         service_display:
                           type: string

@@ -7,8 +7,9 @@ import (
 	"dtstack.com/dtstack/mole-operator/pkg/controller/common"
 	"dtstack.com/dtstack/mole-operator/pkg/controller/model"
 	"fmt"
-	v12 "k8s.io/api/apps/v1"
-	v1 "k8s.io/api/core/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 	v1beta12 "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -17,6 +18,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 	"time"
@@ -56,13 +58,13 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	}
 
 	// Watch for changes to primary resource Mole
-	err = c.Watch(&source.Kind{Type: &molev1.Mole{}}, &handler.EnqueueRequestForObject{})
+	err = c.Watch(&source.Kind{Type: &molev1.Mole{}}, &handler.EnqueueRequestForObject{}, predicate.ResourceVersionChangedPredicate{})
 	if err != nil {
 		return err
 	}
 
 	//Watch for changes to secondary resource and requeue the owner Mole
-	if err = watchSecondaryResource(c, &v12.Deployment{}); err != nil {
+	if err = watchSecondaryResource(c, &appsv1.Deployment{}); err != nil {
 		return err
 	}
 
@@ -70,7 +72,11 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 		return err
 	}
 
-	if err = watchSecondaryResource(c, &v1.Service{}); err != nil {
+	if err = watchSecondaryResource(c, &corev1.Service{}); err != nil {
+		return err
+	}
+
+	if err = watchSecondaryResource(c, &batchv1.Job{}); err != nil {
 		return err
 	}
 
@@ -85,14 +91,7 @@ func watchSecondaryResource(c controller.Controller, resource runtime.Object) er
 	return c.Watch(&source.Kind{Type: resource}, &handler.EnqueueRequestForOwner{
 		IsController: true,
 		OwnerType:    &molev1.Mole{},
-	})
-}
-
-func watchThirdResource(c controller.Controller, resource runtime.Object) error {
-	return c.Watch(&source.Kind{Type: resource}, &handler.EnqueueRequestForOwner{
-		IsController: false,
-		OwnerType:    &molev1.Mole{},
-	})
+	}, predicate.ResourceVersionChangedPredicate{})
 }
 
 // blank assignment to verify that ReconcileMole implements reconcile.Reconciler
@@ -157,7 +156,6 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 			log.Error(err, "error reading state")
 			return r.manageError(cr, err)
 		}
-
 		//get desired status
 		reconciler := NewMoleReconciler(serviceName)
 		desiredState := reconciler.Reconcile(currentState, cr)
@@ -174,6 +172,9 @@ func (r *ReconcileMole) Reconcile(request reconcile.Request) (reconcile.Result, 
 				readyCount++
 			}
 		}
+		if currentState.MoleJob != nil && currentState.MoleJob.Status.Succeeded == *currentState.MoleJob.Spec.Completions {
+			readyCount++
+		}
 	}
 	if readyCount == specCount {
 		return r.manageSuccess(cr, molev1.MOLEF_RUNNING)
@@ -186,7 +187,6 @@ func (r *ReconcileMole) manageError(cr *molev1.Mole, issue error) (reconcile.Res
 	cr.Labels = model.GetMoleLabels(cr)
 	cr.Status.Phase = molev1.MOLE_FAILED
 	cr.Status.Message = issue.Error()
-
 	err := r.client.Update(r.context, cr)
 	if err != nil {
 		// Ignore conflicts, resource might just be outdated.

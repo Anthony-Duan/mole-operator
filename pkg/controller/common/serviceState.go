@@ -4,9 +4,9 @@ import (
 	"context"
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
 	"dtstack.com/dtstack/mole-operator/pkg/controller/model"
-	v12 "k8s.io/api/apps/v1"
-	v13 "k8s.io/api/apps/v1"
-	v1 "k8s.io/api/core/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -14,10 +14,11 @@ import (
 
 type ServiceState struct {
 	Name           string
-	MoleConfig     *v1.ConfigMap
+	MoleConfig     *corev1.ConfigMap
 	MoleIngress    *v1beta1.Ingress
-	MoleService    *v1.Service
-	MoleDeployment *v13.Deployment
+	MoleService    *corev1.Service
+	MoleDeployment *appsv1.Deployment
+	MoleJob        *batchv1.Job
 }
 
 func NewServiceState(name string) *ServiceState {
@@ -27,7 +28,10 @@ func NewServiceState(name string) *ServiceState {
 }
 
 func (i *ServiceState) Read(ctx context.Context, cr *molev1.Mole, client client.Client) error {
-
+	//if job, no deployment,service,ingress
+	if cr.Spec.Product.Service[i.Name].IsJob {
+		return i.readMoleJob(ctx, cr, client)
+	}
 	err := i.readMoleDeployment(ctx, cr, client, i.Name)
 	if err != nil {
 		return err
@@ -39,12 +43,27 @@ func (i *ServiceState) Read(ctx context.Context, cr *molev1.Mole, client client.
 	if cr.Spec.Product.Service[i.Name].IsDeployIngress {
 		err = i.readMoleIngress(ctx, cr, client)
 	}
+
 	return err
+}
+
+func (i *ServiceState) readMoleJob(ctx context.Context, cr *molev1.Mole, reader client.Reader) error {
+	currentState := &batchv1.Job{}
+	selector := model.MoleJobSelector(cr, i.Name)
+	err := reader.Get(ctx, selector, currentState)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			return nil
+		}
+		return err
+	}
+	i.MoleJob = currentState.DeepCopy()
+	return nil
 }
 
 func (i *ServiceState) readMoleService(ctx context.Context, cr *molev1.Mole, client client.Client, name string) error {
 	//currentState := model.MoleService(cr, name)
-	currentState := &v1.Service{}
+	currentState := &corev1.Service{}
 	selector := model.MoleServiceSelector(cr, name)
 	err := client.Get(ctx, selector, currentState)
 	if err != nil {
@@ -75,7 +94,7 @@ func (i *ServiceState) readMoleIngress(ctx context.Context, cr *molev1.Mole, cli
 
 func (i *ServiceState) readMoleDeployment(ctx context.Context, cr *molev1.Mole, client client.Client, name string) error {
 	//currentState := model.MoleDeployment(cr, name)
-	currentState := &v12.Deployment{}
+	currentState := &appsv1.Deployment{}
 	selector := model.MoleDeploymentSelector(cr, name)
 	err := client.Get(ctx, selector, currentState)
 	if err != nil {

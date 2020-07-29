@@ -3,7 +3,7 @@ package model
 import (
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
 	"k8s.io/api/extensions/v1beta1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
@@ -57,7 +57,7 @@ func getIngressRulePaths(cr *molev1.Mole, name string) []v1beta1.HTTPIngressPath
 
 func MoleIngress(cr *molev1.Mole, name string) *v1beta1.Ingress {
 	return &v1beta1.Ingress{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:        BuildResourceName(MoleIngressName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 			Namespace:   cr.Namespace,
 			Labels:      GetIngressLabels(cr, name),

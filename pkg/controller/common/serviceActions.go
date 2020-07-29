@@ -5,10 +5,10 @@ import (
 	stdErr "errors"
 	"fmt"
 	"github.com/go-logr/logr"
-	v12 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -80,7 +80,7 @@ func (i *ServiceActionRunner) RunAll(desiredState DesiredServiceState) error {
 }
 
 func (i *ServiceActionRunner) create(obj runtime.Object) error {
-	err := controllerutil.SetControllerReference(i.cr.(v1.Object), obj.(v1.Object), i.scheme)
+	err := controllerutil.SetControllerReference(i.cr.(metav1.Object), obj.(metav1.Object), i.scheme)
 	if err != nil {
 		return err
 	}
@@ -88,16 +88,16 @@ func (i *ServiceActionRunner) create(obj runtime.Object) error {
 }
 
 func (i *ServiceActionRunner) update(obj runtime.Object) error {
-	err := controllerutil.SetControllerReference(i.cr.(v1.Object), obj.(v1.Object), i.scheme)
+	err := controllerutil.SetControllerReference(i.cr.(metav1.Object), obj.(metav1.Object), i.scheme)
 	if err != nil {
 		return err
 	}
-
 	err = i.client.Update(i.ctx, obj)
 	if err != nil {
 		// Update conflicts can happen frequently when kubernetes updates the resource
 		// in the background
 		if errors.IsConflict(err) {
+			fmt.Println("conflict----------------------------", err.Error())
 			return nil
 		}
 		return err
@@ -118,7 +118,7 @@ func (i *ServiceActionRunner) ingressReady(obj runtime.Object) error {
 }
 
 func (i *ServiceActionRunner) deploymentReady(obj runtime.Object) error {
-	ready, err := IsDeploymentReady(obj.(*v12.Deployment))
+	ready, err := IsDeploymentReady(obj.(*appsv1.Deployment))
 	if err != nil {
 		return err
 	}

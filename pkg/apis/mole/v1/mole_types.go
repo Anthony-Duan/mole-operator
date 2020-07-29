@@ -26,6 +26,7 @@ type Instance struct {
 	Service        *MoleService             `json:"service,omitempty"`
 	Deployment     *MoleDeployment          `json:"deployment,omitempty"`
 	Resources      *v1.ResourceRequirements `json:"resources,omitempty"`
+	PostDeploy     string                   `json:"post_deploy,omitempty"`
 }
 
 type ServiceConfig struct {
@@ -39,6 +40,7 @@ type ServiceConfig struct {
 	BaseService     string   `json:"base_service,omitempty"`
 	BaseParsed      bool     `json:"base_parsed,omitempty"`
 	BaseAttribute   string   `json:"base_attribute,omitempty"`
+	IsJob           bool     `json:"is_job,omitempty"`
 }
 
 type SchemaConfig struct {
