@@ -99,6 +99,11 @@ type MoleStatus struct {
 	Message string    `json:"message"`
 }
 
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// Mole is the Schema for the moles API
+// +kubebuilder:subresource:status
+// +kubebuilder:resource:path=moles,scope=Namespaced
 type Mole struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -107,6 +112,9 @@ type Mole struct {
 	Status MoleStatus `json:"status,omitempty"`
 }
 
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// MoleList contains a list of Mole
 type MoleList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
