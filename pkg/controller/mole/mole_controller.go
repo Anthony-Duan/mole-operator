@@ -215,11 +215,19 @@ func TopologySort(depends map[string][]string) ([]string, error) {
 	queue := list.New()
 	result := make([]string, 0)
 	count := make(map[string]int)
+	dependsLink := make(map[string][]string)
+
+	for name := range depends {
+		dependsLink[name] = make([]string, 0)
+	}
 
 	for name, dependList := range depends { // init topo
 		count[name] = len(dependList)
 		if count[name] == 0 { // add no depends service in queue
 			queue.PushBack(name)
+		}
+		for _, linkName := range dependList {
+			dependsLink[linkName] = append(dependsLink[linkName], name)
 		}
 	}
 
@@ -228,7 +236,7 @@ func TopologySort(depends map[string][]string) ([]string, error) {
 		queue.Remove(top)
 		serviceName := top.Value.(string)
 		result = append(result, serviceName)
-		for _, depend := range depends[serviceName] {
+		for _, depend := range dependsLink[serviceName] {
 			count[depend]--
 			if count[depend] == 0 { // add no depends service in queue
 				queue.PushBack(depend)
