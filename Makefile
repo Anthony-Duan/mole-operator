@@ -1,4 +1,4 @@
-mod-fresh: mod-on mod-tidy mod-vendor mod-off
+mod: mod-on mod-tidy mod-vendor mod-off
 
 mod-off:
 	export GO111MODULE=off
@@ -11,6 +11,8 @@ mod-tidy:
 
 mod-vendor:
 	go mod vendor
+
+
 
 crds:
     # operator-sdk generate crds --crd-version v1beta1
@@ -25,11 +27,11 @@ image:
 push:
 	docker push registry.cn-hangzhou.aliyuncs.com/dtstack/mole:v1.0.9
 
-build-cmd:
+gobuild:
 	go build cmd/manager/main.go
 
-sdk-run-local:
+run:
 	operator-sdk run local --watch-namespace="dtstack-system"
 
-operator-regist:
+registcrd:
 	kubectl create -f deploy/crds/operator.dtstack.com_moles_crd.yaml
