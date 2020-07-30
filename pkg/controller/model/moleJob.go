@@ -39,6 +39,7 @@ func MoleJob(cr *molev1.Mole, name string) *batchv1.Job {
 					Annotations: getPodAnnotations(cr, nil, name),
 				},
 				Spec: corev1.PodSpec{
+					ImagePullSecrets: getImagePullSecrets(cr),
 					Containers: []corev1.Container{
 						{
 							Name:    ConvertDNSRuleName(name),

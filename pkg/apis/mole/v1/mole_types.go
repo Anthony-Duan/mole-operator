@@ -104,7 +104,6 @@ type MoleStatus struct {
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // Mole is the Schema for the moles API
-// +kubebuilder:subresource:status
 // +kubebuilder:resource:path=moles,scope=Namespaced
 type Mole struct {
 	metav1.TypeMeta   `json:",inline"`
