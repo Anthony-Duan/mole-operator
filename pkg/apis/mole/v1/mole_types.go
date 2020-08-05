@@ -74,17 +74,18 @@ type MoleService struct {
 }
 
 type MoleDeployment struct {
-	Annotations                   map[string]string      `json:"annotations,omitempty"`
-	Labels                        map[string]string      `json:"labels,omitempty"`
-	Replicas                      int32                  `json:"replicas,omitempty"`
-	Image                         string                 `json:"image,omitempty"`
-	Ports                         []int                  `json:"ports,omitempty"`
-	Containers                    []MoleContainer        `json:"containers,omitempty"`
-	NodeSelector                  map[string]string      `json:"nodeSelector,omitempty"`
-	Tolerations                   []v1.Toleration        `json:"tolerations,omitempty"`
-	Affinity                      *v1.Affinity           `json:"affinity,omitempty"`
-	SecurityContext               *v1.PodSecurityContext `json:"securityContext,omitempty"`
-	TerminationGracePeriodSeconds int64                  `json:"terminationGracePeriodSeconds,omitempty"`
+	Annotations                   map[string]string        `json:"annotations,omitempty"`
+	Labels                        map[string]string        `json:"labels,omitempty"`
+	Replicas                      int32                    `json:"replicas,omitempty"`
+	Image                         string                   `json:"image,omitempty"`
+	Ports                         []int                    `json:"ports,omitempty"`
+	Containers                    []MoleContainer          `json:"containers,omitempty"`
+	NodeSelector                  map[string]string        `json:"nodeSelector,omitempty"`
+	Tolerations                   []v1.Toleration          `json:"tolerations,omitempty"`
+	Resources                     *v1.ResourceRequirements `json:"resources,omitempty"`
+	Affinity                      *v1.Affinity             `json:"affinity,omitempty"`
+	SecurityContext               *v1.PodSecurityContext   `json:"securityContext,omitempty"`
+	TerminationGracePeriodSeconds int64                    `json:"terminationGracePeriodSeconds,omitempty"`
 }
 
 type MoleContainer struct {

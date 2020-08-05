@@ -5,11 +5,18 @@ import (
 	"fmt"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"strings"
+)
+
+const (
+	MemoryRequest = "1Gi"
+	MemoryLimit   = "8Gi"
+	CpuLimit      = "4000m"
 )
 
 func getAffinities(cr *molev1.Mole, name string) *corev1.Affinity {
@@ -188,17 +195,18 @@ func getVolumeMounts(cr *molev1.Mole, name string) []corev1.VolumeMount {
 func getContainers(cr *molev1.Mole, name string) []corev1.Container {
 	var containers []corev1.Container
 	containers = append(containers, corev1.Container{
-		Name:         ConvertDNSRuleName(name),
-		Image:        cr.Spec.Product.Service[name].Instance.Deployment.Image,
-		WorkingDir:   "",
-		Ports:        getContainerPorts(cr, name),
-		VolumeMounts: getVolumeMounts(cr, name),
+		Name:            ConvertDNSRuleName(name),
+		Image:           cr.Spec.Product.Service[name].Instance.Deployment.Image,
+		WorkingDir:      "",
+		Ports:           getContainerPorts(cr, name),
+		VolumeMounts:    getVolumeMounts(cr, name),
+		Resources:       getResources(cr, name),
+		ImagePullPolicy: "IfNotPresent",
+		Lifecycle:       getPodLifeCycle(),
 		//LivenessProbe:  getProbe(cr, 0, 10, 10, name),
 		//ReadinessProbe: getProbe(cr, 0, 3, 1, name),
 		//TerminationMessagePath:   "/dev/termination-log",
 		//TerminationMessagePolicy: "File",
-		ImagePullPolicy: "IfNotPresent",
-		Lifecycle:       getPodLifeCycle(),
 	})
 	for _, container := range cr.Spec.Product.Service[name].Instance.Deployment.Containers {
 		containers = append(containers, corev1.Container{
@@ -303,6 +311,20 @@ func getPodLifeCycle() *corev1.Lifecycle {
 					"mkdir -p /mount/${HOSTNAME}/logs && ln -s /mount/${HOSTNAME}/logs logs",
 				},
 			},
+		},
+	}
+}
+func getResources(cr *molev1.Mole, name string) corev1.ResourceRequirements {
+	if cr.Spec.Product.Service[name].Instance.Deployment.Resources != nil {
+		return *cr.Spec.Product.Service[name].Instance.Deployment.Resources
+	}
+	return corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse(MemoryRequest),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse(MemoryLimit),
+			corev1.ResourceCPU:    resource.MustParse(CpuLimit),
 		},
 	}
 }
