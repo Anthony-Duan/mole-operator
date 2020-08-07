@@ -17,6 +17,7 @@ const (
 	MemoryRequest = "1Gi"
 	MemoryLimit   = "8Gi"
 	CpuLimit      = "4000m"
+	CpuRequest    = "0"
 )
 
 func getAffinities(cr *molev1.Mole, name string) *corev1.Affinity {
@@ -321,6 +322,7 @@ func getResources(cr *molev1.Mole, name string) corev1.ResourceRequirements {
 	return corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
 			corev1.ResourceMemory: resource.MustParse(MemoryRequest),
+			corev1.ResourceCPU:    resource.MustParse(CpuRequest),
 		},
 		Limits: corev1.ResourceList{
 			corev1.ResourceMemory: resource.MustParse(MemoryLimit),

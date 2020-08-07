@@ -2,11 +2,13 @@ package model
 
 import (
 	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	"fmt"
 	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
+	"strings"
 )
 
 func getIngressTLS(cr *molev1.Mole, name string) []v1beta1.IngressTLS {
@@ -33,6 +35,12 @@ func getIngressSpec(cr *molev1.Mole, name string) v1beta1.IngressSpec {
 				Host: GetHost(cr, name),
 				IngressRuleValue: v1beta1.IngressRuleValue{
 					HTTP: &v1beta1.HTTPIngressRuleValue{
+						Paths: getIngressRule(cr, name),
+					},
+				},
+			}, {
+				IngressRuleValue: v1beta1.IngressRuleValue{
+					HTTP: &v1beta1.HTTPIngressRuleValue{
 						Paths: getIngressRulePaths(cr, name),
 					},
 				},
@@ -41,11 +49,25 @@ func getIngressSpec(cr *molev1.Mole, name string) v1beta1.IngressSpec {
 	}
 }
 
-func getIngressRulePaths(cr *molev1.Mole, name string) []v1beta1.HTTPIngressPath {
+func getIngressRule(cr *molev1.Mole, name string) []v1beta1.HTTPIngressPath {
 	paths := make([]v1beta1.HTTPIngressPath, 0)
 	for _, port := range cr.Spec.Product.Service[name].Instance.Deployment.Ports {
 		paths = append(paths, v1beta1.HTTPIngressPath{
 			//Path: fmt.Sprintf("/%v/%v/", cr.Namespace, strings.ToLower(name)),
+			Backend: v1beta1.IngressBackend{
+				ServiceName: BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+				ServicePort: intstr.FromInt(port),
+			},
+		})
+	}
+	return paths
+}
+
+func getIngressRulePaths(cr *molev1.Mole, name string) []v1beta1.HTTPIngressPath {
+	paths := make([]v1beta1.HTTPIngressPath, 0)
+	for _, port := range cr.Spec.Product.Service[name].Instance.Deployment.Ports {
+		paths = append(paths, v1beta1.HTTPIngressPath{
+			Path: fmt.Sprintf("/%v/%v/", cr.Namespace, strings.ToLower(name)),
 			Backend: v1beta1.IngressBackend{
 				ServiceName: BuildResourceName(MoleServiceName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				ServicePort: intstr.FromInt(port),
@@ -113,7 +135,8 @@ func GetIngressAnnotations(cr *molev1.Mole, existing map[string]string, name str
 
 func GetHost(cr *molev1.Mole, name string) string {
 	if cr.Spec.Product.Service[name].Instance.Ingress == nil {
-		return ""
+		fmt.Sprintf("%v.%v.dtstack.com")
+		return fmt.Sprintf("%v.%v.dtstack.com", strings.ToLower(cr.Spec.Product.ProductName), cr.Namespace)
 	}
 	return cr.Spec.Product.Service[name].Instance.Ingress.Hostname
 }
