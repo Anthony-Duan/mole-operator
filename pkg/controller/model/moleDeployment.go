@@ -149,16 +149,16 @@ func getVolumes(cr *molev1.Mole, name string) []corev1.Volume {
 	})
 
 	//Volume to mount hostPath to share logs
-	hostPathType := corev1.HostPathDirectoryOrCreate
-	volumes = append(volumes, corev1.Volume{
-		Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-		VolumeSource: corev1.VolumeSource{
-			HostPath: &corev1.HostPathVolumeSource{
-				Path: LogPath + "/" + cr.Spec.Product.ProductName + "/" + name,
-				Type: &hostPathType,
-			},
-		},
-	})
+	//hostPathType := corev1.HostPathDirectoryOrCreate
+	//volumes = append(volumes, corev1.Volume{
+	//	Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+	//	VolumeSource: corev1.VolumeSource{
+	//		HostPath: &corev1.HostPathVolumeSource{
+	//			Path: LogPath + "/" + cr.Spec.Product.ProductName + "/" + name,
+	//			Type: &hostPathType,
+	//		},
+	//	},
+	//})
 	return volumes
 }
 
@@ -172,10 +172,10 @@ func getVolumeMounts(cr *molev1.Mole, name string) []corev1.VolumeMount {
 			MountPath: fmt.Sprintf("opt/dtstack/%v/%v/%v", cr.Spec.Product.ProductName, name, configPath),
 		})
 	}
-	mounts = append(mounts, corev1.VolumeMount{
-		Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-		MountPath: MoleMountPath,
-	})
+	//mounts = append(mounts, corev1.VolumeMount{
+	//	Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+	//	MountPath: MoleMountPath,
+	//})
 
 	return mounts
 }
