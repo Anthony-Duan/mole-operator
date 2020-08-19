@@ -203,7 +203,7 @@ func getContainers(cr *molev1.Mole, name string) []corev1.Container {
 		VolumeMounts:    getVolumeMounts(cr, name),
 		Resources:       getResources(cr, name),
 		ImagePullPolicy: "IfNotPresent",
-		Lifecycle:       getPodLifeCycle(),
+		//Lifecycle:       getPodLifeCycle(),
 		//LivenessProbe:  getProbe(cr, 0, 10, 10, name),
 		//ReadinessProbe: getProbe(cr, 0, 3, 1, name),
 		//TerminationMessagePath:   "/dev/termination-log",
