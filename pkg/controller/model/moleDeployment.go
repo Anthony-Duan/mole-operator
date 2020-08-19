@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MemoryRequest = "1Gi"
+	MemoryRequest = "100Mi"
 	MemoryLimit   = "8Gi"
 	CpuLimit      = "4000m"
 	CpuRequest    = "0"

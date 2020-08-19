@@ -29,9 +29,8 @@
     <list default="true" id="4e2a1c40-815f-48fd-9098-079c356d5a00" name="Default Changelist" comment="mole add job">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/manager/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/manager/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/deploy/crds/operator.dtstack.com_moles_crd.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/crds/operator.dtstack.com_moles_crd.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/apis/mole/v1/zz_generated.deepcopy.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/apis/mole/v1/zz_generated.deepcopy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/model/moleDeployment.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/moleDeployment.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +44,7 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="/usr/local/go" />
+  <component name="GOROOT" path="C:\Go" />
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
@@ -72,7 +71,7 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="go.vendoring.notification.had.been.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../easymatrix" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -119,16 +118,10 @@
       <pattern value="^TestIfImplInject$" />
       <method v="2" />
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Go Build.go build dtstack.com/dtstack/mole-operator/cmd/manager" />
-        <item itemvalue="Go Test.TestIfImplInject in dtstack.com/dtstack/mole-operator/pkg/controller/handler" />
-        <item itemvalue="Go Test.Test2 in dtstack.com/dtstack/mole-operator/pkg/controller/handler" />
-      </list>
-    </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="2" />
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -168,14 +161,19 @@
     <proxy>https://goproxy.cn,direct</proxy>
   </component>
   <component name="WindowStateProjectService">
-    <state x="520" y="376" key="#GOROOT" timestamp="1594918792761">
-      <screen x="0" y="23" width="1440" height="833" />
+    <state x="555" y="366" key="#GOROOT" timestamp="1596792408213">
+      <screen x="0" y="0" width="1536" height="864" />
     </state>
+    <state x="555" y="366" key="#GOROOT/0.0.1536.864@0.0.1536.864" timestamp="1596792408213" />
     <state x="520" y="376" key="#GOROOT/0.23.1440.833@0.23.1440.833" timestamp="1594918792761" />
     <state x="484" y="153" key="#com.intellij.ide.util.MemberChooser" timestamp="1595878828411">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
     <state x="484" y="153" key="#com.intellij.ide.util.MemberChooser/0.23.1440.833@0.23.1440.833" timestamp="1595878828411" />
+    <state x="549" y="187" key="FileChooserDialogImpl" timestamp="1597203413952">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="549" y="187" key="FileChooserDialogImpl/0.0.1536.864@0.0.1536.864" timestamp="1597203413952" />
     <state width="351" height="206" key="Git.Branch.Popup" timestamp="1595831273206">
       <screen x="0" y="23" width="1440" height="833" />
     </state>
@@ -232,6 +230,10 @@
       <screen x="0" y="23" width="1440" height="833" />
     </state>
     <state x="378" y="341" key="git4idea.ui.GitResetDialog/0.23.1440.833@0.23.1440.833" timestamp="1595832128338" />
+    <state x="431" y="181" key="search.everywhere.popup" timestamp="1596797044601">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="431" y="181" key="search.everywhere.popup/0.0.1536.864@0.0.1536.864" timestamp="1596797044601" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
