@@ -1,5 +1,7 @@
 package model
 
+import corev1 "k8s.io/api/core/v1"
+
 const (
 	MoleServiceName        = "service"
 	MoleConfigName         = "configmap"
@@ -14,4 +16,13 @@ const (
 	LogPath                = "/tmp/dtstack/"
 	MoleServiceAccountName = "dtstack"
 	MoleCom                = "dtstack.com"
+	DefaultMemoryRequest 		   = "100Mi"
+	DefaultMemoryLimit   		   = "4Gi"
+	DefaultCpuLimit      		   = "2000m"
+	DefaultCpuRequest    		   = "0"
 )
+
+var SupportResource = map[corev1.ResourceName]struct{}{
+	corev1.ResourceCPU: {},
+	corev1.ResourceMemory: {},
+}

@@ -45,6 +45,7 @@ func MoleJob(cr *molev1.Mole, name string) *batchv1.Job {
 							Name:    ConvertDNSRuleName(name),
 							Image:   cr.Spec.Product.Service[name].Instance.Deployment.Image,
 							Command: strings.Split(cr.Spec.Product.Service[name].Instance.PostDeploy, " "),
+							Resources: getResources(cr,name),
 						},
 					},
 					RestartPolicy: "Never",

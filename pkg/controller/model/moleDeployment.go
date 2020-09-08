@@ -5,19 +5,12 @@ import (
 	"fmt"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
+	apiresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"strings"
-)
-
-const (
-	MemoryRequest = "100Mi"
-	MemoryLimit   = "8Gi"
-	CpuLimit      = "4000m"
-	CpuRequest    = "0"
 )
 
 func getAffinities(cr *molev1.Mole, name string) *corev1.Affinity {
@@ -316,17 +309,28 @@ func getPodLifeCycle() *corev1.Lifecycle {
 	}
 }
 func getResources(cr *molev1.Mole, name string) corev1.ResourceRequirements {
-	if cr.Spec.Product.Service[name].Instance.Deployment.Resources != nil {
-		return *cr.Spec.Product.Service[name].Instance.Deployment.Resources
+	limits := corev1.ResourceList{
+		corev1.ResourceMemory:  apiresource.MustParse(DefaultMemoryLimit),
+		corev1.ResourceCPU:  apiresource.MustParse(DefaultCpuLimit),
+	}
+	requests := corev1.ResourceList{
+		corev1.ResourceMemory: apiresource.MustParse(DefaultMemoryRequest),
+		corev1.ResourceCPU: apiresource.MustParse(DefaultCpuRequest),
+	}
+	if resources := cr.Spec.Product.Service[name].Instance.Resources; resources != nil{
+		for k,v := range resources.Limits{
+			if _,support := SupportResource[k];support{
+				limits[k] = v
+			}
+		}
+		for k,v := range resources.Requests{
+			if _,support := SupportResource[k];support{
+				requests[k] = v
+			}
+		}
 	}
 	return corev1.ResourceRequirements{
-		Requests: corev1.ResourceList{
-			corev1.ResourceMemory: resource.MustParse(MemoryRequest),
-			corev1.ResourceCPU:    resource.MustParse(CpuRequest),
-		},
-		Limits: corev1.ResourceList{
-			corev1.ResourceMemory: resource.MustParse(MemoryLimit),
-			corev1.ResourceCPU:    resource.MustParse(CpuLimit),
-		},
+		Requests: requests,
+		Limits: limits,
 	}
 }
