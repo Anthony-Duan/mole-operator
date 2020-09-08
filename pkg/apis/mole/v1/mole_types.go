@@ -25,7 +25,7 @@ type Instance struct {
 	Ingress        *MoleIngress             `json:"ingress,omitempty"`
 	Service        *MoleService             `json:"service,omitempty"`
 	Deployment     *MoleDeployment          `json:"deployment,omitempty"`
-	Resources      *v1.ResourceRequirements `json:"resources,omitempty"`
+	Resources      v1.ResourceRequirements `json:"resources,omitempty"`
 	PostDeploy     string                   `json:"post_deploy,omitempty"`
 }
 

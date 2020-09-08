@@ -317,18 +317,18 @@ func getResources(cr *molev1.Mole, name string) corev1.ResourceRequirements {
 		corev1.ResourceMemory: apiresource.MustParse(DefaultMemoryRequest),
 		corev1.ResourceCPU: apiresource.MustParse(DefaultCpuRequest),
 	}
-	if resources := cr.Spec.Product.Service[name].Instance.Resources; resources != nil{
-		for k,v := range resources.Limits{
-			if _,support := SupportResource[k];support{
-				limits[k] = v
-			}
-		}
-		for k,v := range resources.Requests{
-			if _,support := SupportResource[k];support{
-				requests[k] = v
-			}
+	resources := cr.Spec.Product.Service[name].Instance.Resources
+	for r,l := range resources.Limits{
+		if _,support := SupportResource[r];support{
+			limits[r] = l
 		}
 	}
+	for r,q := range resources.Requests{
+		if _,support := SupportResource[r];support{
+			requests[r] = q
+		}
+	}
+
 	return corev1.ResourceRequirements{
 		Requests: requests,
 		Limits: limits,
