@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+FROM debian:buster-slim
 
 ENV OPERATOR=/usr/local/bin/mole-operator \
     USER_UID=1001 \
