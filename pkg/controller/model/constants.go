@@ -17,8 +17,8 @@ const (
 	MoleServiceAccountName = "dtstack"
 	MoleCom                = "dtstack.com"
 	DefaultMemoryRequest 		   = "100Mi"
-	DefaultMemoryLimit   		   = "4Gi"
-	DefaultCpuLimit      		   = "2000m"
+	DefaultMemoryLimit   		   = "1Gi"
+	DefaultCpuLimit      		   = "500m"
 	DefaultCpuRequest    		   = "0"
 )
 
