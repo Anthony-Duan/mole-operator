@@ -26,3 +26,5 @@ var SupportResource = map[corev1.ResourceName]struct{}{
 	corev1.ResourceCPU: {},
 	corev1.ResourceMemory: {},
 }
+
+var VolumeConfigMapMode int32 = 0755

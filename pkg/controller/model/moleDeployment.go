@@ -137,6 +137,7 @@ func getVolumes(cr *molev1.Mole, name string) []corev1.Volume {
 				LocalObjectReference: corev1.LocalObjectReference{
 					Name: BuildResourceName(MoleConfigName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				},
+				DefaultMode: &VolumeConfigMapMode,
 			},
 		},
 	})
