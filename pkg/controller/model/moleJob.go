@@ -46,6 +46,7 @@ func MoleJob(cr *molev1.Mole, name string) *batchv1.Job {
 							Image:   cr.Spec.Product.Service[name].Instance.Deployment.Image,
 							Command: strings.Split(cr.Spec.Product.Service[name].Instance.PostDeploy, " "),
 							Resources: getResources(cr,name),
+							ImagePullPolicy: "Always",
 						},
 					},
 					RestartPolicy: "Never",
