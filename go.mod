@@ -1,4 +1,4 @@
-module dtstack.com/dtstack/mole-operator
+module gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator
 
 go 1.13
 

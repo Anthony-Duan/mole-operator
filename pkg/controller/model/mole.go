@@ -1,7 +1,7 @@
 package model
 
 import (
-	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	molev1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
 	"strconv"
 )
 

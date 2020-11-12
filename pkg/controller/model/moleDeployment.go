@@ -1,7 +1,7 @@
 package model
 
 import (
-	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	molev1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
 	"fmt"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
