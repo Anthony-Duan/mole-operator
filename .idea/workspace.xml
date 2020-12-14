@@ -28,10 +28,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4e2a1c40-815f-48fd-9098-079c356d5a00" name="Default Changelist" comment="mole add job">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/manager/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/manager/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deploy/crds/operator.dtstack.com_moles_crd.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deploy/crds/operator.dtstack.com_moles_crd.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/apis/mole/v1/zz_generated.deepcopy.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/apis/mole/v1/zz_generated.deepcopy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +46,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feat_4.0.4.sql_init" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />

@@ -1,4 +1,4 @@
-module dtstack.com/dtstack/mole-operator
+module github.com/Anthony-Duan/mole-operator
 
 go 1.13
 
