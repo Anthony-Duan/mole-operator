@@ -1,9 +1,9 @@
 package mole
 
 import (
-	molev1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
-	"gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/controller/common"
-	"gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/controller/model"
+	molev1 "github.com/Anthony-Duan/mole-operator/pkg/apis/mole/v1"
+	"github.com/Anthony-Duan/mole-operator/pkg/controller/common"
+	"github.com/Anthony-Duan/mole-operator/pkg/controller/model"
 )
 
 type MoleReconciler struct {

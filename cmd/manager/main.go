@@ -14,9 +14,9 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/rest"
 
-	"gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis"
-	"gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/controller"
-	"gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/version"
+	"github.com/Anthony-Duan/mole-operator/pkg/apis"
+	"github.com/Anthony-Duan/mole-operator/pkg/controller"
+	"github.com/Anthony-Duan/mole-operator/version"
 
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	kubemetrics "github.com/operator-framework/operator-sdk/pkg/kube-metrics"

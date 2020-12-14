@@ -1,8 +1,8 @@
 package model
 
 import (
-	molev1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
 	"fmt"
+	molev1 "github.com/Anthony-Duan/mole-operator/pkg/apis/mole/v1"
 	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"

@@ -26,9 +26,19 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e2a1c40-815f-48fd-9098-079c356d5a00" name="Default Changelist" comment="mole add job">
+    <list default="true" id="4e2a1c40-815f-48fd-9098-079c356d5a00" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/manager/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/manager/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/apis/addtoscheme_operator_v1.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/apis/addtoscheme_operator_v1.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/add_mole.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/add_mole.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/common/serviceState.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/common/serviceState.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/model/mole.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/mole.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/model/moleDeployment.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/moleDeployment.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/model/moleIngress.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/moleIngress.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/model/moleJob.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/moleJob.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/model/moleService.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/model/moleService.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/mole/mole_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/mole/mole_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/controller/mole/mole_reconciler.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/mole/mole_reconciler.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,8 +52,14 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="/usr/local/go" />
+  <component name="GOROOT" url="file:///usr/local/Cellar/go/1.15.5/libexec" />
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--follow-tags" />
+        <option name="title" value="Current Branch" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="master" />
@@ -70,6 +86,12 @@
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="go.vendoring.notification.had.been.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -138,7 +160,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/feat_4.0.4.sql_init" />
+                        <option value="github" />
                       </list>
                     </value>
                   </entry>
@@ -153,7 +175,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="mole add job" />
-    <option name="LAST_COMMIT_MESSAGE" value="mole add job" />
+    <MESSAGE value="尝试放到 GitHub" />
+    <option name="LAST_COMMIT_MESSAGE" value="尝试放到 GitHub" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -163,72 +186,6 @@
       </map>
     </environment>
     <proxy>https://goproxy.cn,direct</proxy>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="520" y="376" key="#GOROOT" timestamp="1594918792761">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="520" y="376" key="#GOROOT/0.23.1440.833@0.23.1440.833" timestamp="1594918792761" />
-    <state x="484" y="153" key="#com.intellij.ide.util.MemberChooser" timestamp="1595878828411">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="484" y="153" key="#com.intellij.ide.util.MemberChooser/0.23.1440.833@0.23.1440.833" timestamp="1595878828411" />
-    <state width="351" height="206" key="Git.Branch.Popup" timestamp="1595831273206">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="351" height="206" key="Git.Branch.Popup/0.23.1440.833@0.23.1440.833" timestamp="1595831273206" />
-    <state width="1398" height="210" key="GridCell.Tab.0.bottom" timestamp="1596039256086">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="1398" height="210" key="GridCell.Tab.0.bottom/0.23.1440.833/-1600.23.1600.877@0.23.1440.833" timestamp="1596028786782" />
-    <state width="1398" height="210" key="GridCell.Tab.0.bottom/0.23.1440.833@0.23.1440.833" timestamp="1596039256086" />
-    <state width="1398" height="210" key="GridCell.Tab.0.center" timestamp="1596039256085">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="1398" height="210" key="GridCell.Tab.0.center/0.23.1440.833/-1600.23.1600.877@0.23.1440.833" timestamp="1596028786781" />
-    <state width="1398" height="210" key="GridCell.Tab.0.center/0.23.1440.833@0.23.1440.833" timestamp="1596039256085" />
-    <state width="1398" height="210" key="GridCell.Tab.0.left" timestamp="1596039256084">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="1398" height="210" key="GridCell.Tab.0.left/0.23.1440.833/-1600.23.1600.877@0.23.1440.833" timestamp="1596028786780" />
-    <state width="1398" height="210" key="GridCell.Tab.0.left/0.23.1440.833@0.23.1440.833" timestamp="1596039256084" />
-    <state width="1398" height="210" key="GridCell.Tab.0.right" timestamp="1596039256085">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state width="1398" height="210" key="GridCell.Tab.0.right/0.23.1440.833/-1600.23.1600.877@0.23.1440.833" timestamp="1596028786782" />
-    <state width="1398" height="210" key="GridCell.Tab.0.right/0.23.1440.833@0.23.1440.833" timestamp="1596039256085" />
-    <state x="0" y="134" key="SettingsEditor" timestamp="1595492727170">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="0" y="134" key="SettingsEditor/0.23.1440.833@0.23.1440.833" timestamp="1595492727170" />
-    <state x="101" y="123" width="1240" height="633" key="ShowDiffWithBranchDialog" timestamp="1595830883969">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="101" y="123" width="1240" height="633" key="ShowDiffWithBranchDialog/0.23.1440.833@0.23.1440.833" timestamp="1595830883969" />
-    <state x="321" y="179" key="Vcs.Push.Dialog.v2" timestamp="1596037935923">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="321" y="179" key="Vcs.Push.Dialog.v2/0.23.1440.833@0.23.1440.833" timestamp="1596037935923" />
-    <state x="512" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1596037944978">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="512" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.833@0.23.1440.833" timestamp="1596037944978" />
-    <state x="504" y="339" width="598" height="490" key="find.popup" timestamp="1596002810199">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="504" y="339" width="598" height="490" key="find.popup/0.23.1440.833@0.23.1440.833" timestamp="1596002810199" />
-    <state x="360" y="235" key="git4idea.merge.GitPullDialog" timestamp="1595831819531">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="360" y="235" key="git4idea.merge.GitPullDialog/0.23.1440.833@0.23.1440.833" timestamp="1595831819531" />
-    <state x="461" y="335" key="git4idea.remote.GitConfigureRemotesDialog" timestamp="1595830803558">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="461" y="335" key="git4idea.remote.GitConfigureRemotesDialog/0.23.1440.833@0.23.1440.833" timestamp="1595830803558" />
-    <state x="378" y="341" key="git4idea.ui.GitResetDialog" timestamp="1595832128338">
-      <screen x="0" y="23" width="1440" height="833" />
-    </state>
-    <state x="378" y="341" key="git4idea.ui.GitResetDialog/0.23.1440.833@0.23.1440.833" timestamp="1595832128338" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

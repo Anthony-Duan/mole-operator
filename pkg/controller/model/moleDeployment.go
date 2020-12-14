@@ -1,8 +1,8 @@
 package model
 
 import (
-	molev1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
 	"fmt"
+	molev1 "github.com/Anthony-Duan/mole-operator/pkg/apis/mole/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apiresource "k8s.io/apimachinery/pkg/api/resource"
@@ -311,27 +311,27 @@ func getPodLifeCycle() *corev1.Lifecycle {
 }
 func getResources(cr *molev1.Mole, name string) corev1.ResourceRequirements {
 	limits := corev1.ResourceList{
-		corev1.ResourceMemory:  apiresource.MustParse(DefaultMemoryLimit),
-		corev1.ResourceCPU:  apiresource.MustParse(DefaultCpuLimit),
+		corev1.ResourceMemory: apiresource.MustParse(DefaultMemoryLimit),
+		corev1.ResourceCPU:    apiresource.MustParse(DefaultCpuLimit),
 	}
 	requests := corev1.ResourceList{
 		corev1.ResourceMemory: apiresource.MustParse(DefaultMemoryRequest),
-		corev1.ResourceCPU: apiresource.MustParse(DefaultCpuRequest),
+		corev1.ResourceCPU:    apiresource.MustParse(DefaultCpuRequest),
 	}
 	resources := cr.Spec.Product.Service[name].Instance.Resources
-	for r,l := range resources.Limits{
-		if _,support := SupportResource[r];support{
+	for r, l := range resources.Limits {
+		if _, support := SupportResource[r]; support {
 			limits[r] = l
 		}
 	}
-	for r,q := range resources.Requests{
-		if _,support := SupportResource[r];support{
+	for r, q := range resources.Requests {
+		if _, support := SupportResource[r]; support {
 			requests[r] = q
 		}
 	}
 
 	return corev1.ResourceRequirements{
 		Requests: requests,
-		Limits: limits,
+		Limits:   limits,
 	}
 }
