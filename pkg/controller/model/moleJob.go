@@ -1,7 +1,7 @@
 package model
 
 import (
-	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	molev1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -45,6 +45,8 @@ func MoleJob(cr *molev1.Mole, name string) *batchv1.Job {
 							Name:    ConvertDNSRuleName(name),
 							Image:   cr.Spec.Product.Service[name].Instance.Deployment.Image,
 							Command: strings.Split(cr.Spec.Product.Service[name].Instance.PostDeploy, " "),
+							Resources: getResources(cr,name),
+							ImagePullPolicy: "Always",
 						},
 					},
 					RestartPolicy: "Never",

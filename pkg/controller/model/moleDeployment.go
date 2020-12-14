@@ -1,22 +1,16 @@
 package model
 
 import (
-	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	molev1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
 	"fmt"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
+	apiresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"strings"
-)
-
-const (
-	MemoryRequest = "1Gi"
-	MemoryLimit   = "8Gi"
-	CpuLimit      = "4000m"
 )
 
 func getAffinities(cr *molev1.Mole, name string) *corev1.Affinity {
@@ -143,21 +137,22 @@ func getVolumes(cr *molev1.Mole, name string) []corev1.Volume {
 				LocalObjectReference: corev1.LocalObjectReference{
 					Name: BuildResourceName(MoleConfigName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
 				},
+				DefaultMode: &VolumeConfigMapMode,
 			},
 		},
 	})
 
 	//Volume to mount hostPath to share logs
-	hostPathType := corev1.HostPathDirectoryOrCreate
-	volumes = append(volumes, corev1.Volume{
-		Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-		VolumeSource: corev1.VolumeSource{
-			HostPath: &corev1.HostPathVolumeSource{
-				Path: LogPath + "/" + cr.Spec.Product.ProductName + "/" + name,
-				Type: &hostPathType,
-			},
-		},
-	})
+	//hostPathType := corev1.HostPathDirectoryOrCreate
+	//volumes = append(volumes, corev1.Volume{
+	//	Name: BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+	//	VolumeSource: corev1.VolumeSource{
+	//		HostPath: &corev1.HostPathVolumeSource{
+	//			Path: LogPath + "/" + cr.Spec.Product.ProductName + "/" + name,
+	//			Type: &hostPathType,
+	//		},
+	//	},
+	//})
 	return volumes
 }
 
@@ -171,10 +166,10 @@ func getVolumeMounts(cr *molev1.Mole, name string) []corev1.VolumeMount {
 			MountPath: fmt.Sprintf("opt/dtstack/%v/%v/%v", cr.Spec.Product.ProductName, name, configPath),
 		})
 	}
-	mounts = append(mounts, corev1.VolumeMount{
-		Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
-		MountPath: MoleMountPath,
-	})
+	//mounts = append(mounts, corev1.VolumeMount{
+	//	Name:      BuildResourceName(MoleLogsVolumeName, cr.Spec.Product.ParentProductName, cr.Spec.Product.ProductName, name),
+	//	MountPath: MoleMountPath,
+	//})
 
 	return mounts
 }
@@ -201,8 +196,8 @@ func getContainers(cr *molev1.Mole, name string) []corev1.Container {
 		Ports:           getContainerPorts(cr, name),
 		VolumeMounts:    getVolumeMounts(cr, name),
 		Resources:       getResources(cr, name),
-		ImagePullPolicy: "IfNotPresent",
-		Lifecycle:       getPodLifeCycle(),
+		ImagePullPolicy: "Always",
+		//Lifecycle:       getPodLifeCycle(),
 		//LivenessProbe:  getProbe(cr, 0, 10, 10, name),
 		//ReadinessProbe: getProbe(cr, 0, 3, 1, name),
 		//TerminationMessagePath:   "/dev/termination-log",
@@ -315,16 +310,28 @@ func getPodLifeCycle() *corev1.Lifecycle {
 	}
 }
 func getResources(cr *molev1.Mole, name string) corev1.ResourceRequirements {
-	if cr.Spec.Product.Service[name].Instance.Deployment.Resources != nil {
-		return *cr.Spec.Product.Service[name].Instance.Deployment.Resources
+	limits := corev1.ResourceList{
+		corev1.ResourceMemory:  apiresource.MustParse(DefaultMemoryLimit),
+		corev1.ResourceCPU:  apiresource.MustParse(DefaultCpuLimit),
 	}
+	requests := corev1.ResourceList{
+		corev1.ResourceMemory: apiresource.MustParse(DefaultMemoryRequest),
+		corev1.ResourceCPU: apiresource.MustParse(DefaultCpuRequest),
+	}
+	resources := cr.Spec.Product.Service[name].Instance.Resources
+	for r,l := range resources.Limits{
+		if _,support := SupportResource[r];support{
+			limits[r] = l
+		}
+	}
+	for r,q := range resources.Requests{
+		if _,support := SupportResource[r];support{
+			requests[r] = q
+		}
+	}
+
 	return corev1.ResourceRequirements{
-		Requests: corev1.ResourceList{
-			corev1.ResourceMemory: resource.MustParse(MemoryRequest),
-		},
-		Limits: corev1.ResourceList{
-			corev1.ResourceMemory: resource.MustParse(MemoryLimit),
-			corev1.ResourceCPU:    resource.MustParse(CpuLimit),
-		},
+		Requests: requests,
+		Limits: limits,
 	}
 }

@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"dtstack.com/dtstack/mole-operator/pkg/controller/mole"
+	"gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/controller/mole"
 )
 
 func init() {

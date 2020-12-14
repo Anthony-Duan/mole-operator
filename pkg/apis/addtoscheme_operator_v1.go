@@ -1,7 +1,7 @@
 package apis
 
 import (
-	v1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
+	v1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
 )
 
 func init() {

@@ -2,8 +2,8 @@ package common
 
 import (
 	"context"
-	molev1 "dtstack.com/dtstack/mole-operator/pkg/apis/mole/v1"
-	"dtstack.com/dtstack/mole-operator/pkg/controller/model"
+	molev1 "gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/apis/mole/v1"
+	"gitlab.prod.dtstack.cn/dt-insight-ops/mole-operator/pkg/controller/model"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
